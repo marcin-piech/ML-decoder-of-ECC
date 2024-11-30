@@ -1,0 +1,380 @@
+\documentclass[12pt, a4paper]{article}
+
+% USEPACKAGE ---########################################
+
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{float}
+\usepackage[polish]{babel}
+\usepackage{fullpage}
+\usepackage[a4paper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{lipsum}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage[labelsep=period]{caption}
+
+% #####################################################
+
+
+\setlength{\parindent}{1.25cm}
+\setlength{\parskip}{0.3em}
+\setcounter{page}{3}
+\newcommand{\sectionbreak}{\clearpage}
+\bibliographystyle{unsrt}
+
+% RENEWCOMMAND ---########################################
+
+\renewcommand{\thefigure}{\thesection.\arabic{figure}}
+\addto\captionspolish{\renewcommand{\figurename}{Rys.}}
+\addto\captionspolish{\renewcommand{\contentsname}{\textbf{SPIS TREŚCI}}}
+\addto\captionspolish{\renewcommand{\refname}{\textbf{WYKAZ LITERATURY}}}
+\addto\captionspolish{\renewcommand{\listfigurename}{\textbf{WYKAZ RYSUNKÓW}}}
+\addto\captionspolish{\renewcommand{\listtablename}{\textbf{WYKAZ TABEL}}}
+
+% #######################################################
+
+
+% \captionsetup[figure]{name=Rys., labelsep=period}
+% \renewcommand{\familydefault}{\arial}
+% \setstretch{1.5}
+\geometry{
+    a4paper,
+    top=2.5cm,
+    bottom=2.5cm,
+    inner=3.5cm,
+    outer=2.5cm
+    % bindingoffset=0cm, % Margines na oprawę
+}
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+
+
+
+\begin{document}
+
+\section*{\textbf{STRESZCZENIE}}
+\newpage
+
+
+\section*{\textbf{ABSTRACT}}
+\newpage
+
+
+\tableofcontents
+\newpage
+
+
+%####################################
+\section*{\textbf{WYKAZ WAŻNIEJSZYCH OZNACZEŃ I SKRÓTÓW}}\setcounter{figure}{0}
+
+
+\begin{itemize}[left=0pt]
+    \item[] ML - Uczenie maszynowe (ang. \textit{Machine Learning})
+    \item[] API - Interfejs programistyczny aplikacji (ang. \textit{Application Programming Interface})
+    \item[] MLP - Wielowarstwowy perceptron (ang. \textit{Multilayer Perceptron})
+    \item[] RAM
+    \item[] GPU
+    \item[] CPU
+    \item[] ANN - Sztuczna sieć neuronowa (ang. \textit{Artificial Neural Network})
+    \item[] CNN - Konwolucyjna sieć neuronowa (ang. \textit{Convolutional Neural Network})
+    \item[] RNN - Rekurencyjna sieć neuronowa (ang. \textit{Recurrent Neural Network})
+\end{itemize}
+
+\addcontentsline{toc}{section}{Wykaz ważniejszych oznaczeń i skrótów} % Dodanie do spisu treści
+\newpage
+%####################################
+
+\section{Wstęp}
+    \subsection{Cel pracy}
+    Celem pracy jest opracowanie przeglądu literatury metod wykorzystujących techniki uczenia maszynowego, w szczególności technik uczenia głębokiego, do poprawy jakości dekodowania wybranych korekcyjnych kodów blokowych, w szczególności kodów Reeda-Solomona oraz kodów BCH (Bose-Chaudhuri-Hocquenghem). Pożądanym efektem jest implementacja jednej z przedstawionych metod.
+    
+    \subsection{Struktura pracy}
+    ? Zostawić na koniec pisania ?
+
+\section{Wprowadzenie do uczenia maszynowego}\setcounter{figure}{0}
+W tym rozdziale omówiono podstawowe definicje i pojęcia kryjące się za terminem uczenie maszynowe (ang. \textit{machine learning}) Przedstawiono opis zagadnienia, techniki uczenia modelu w sposób nadzorowany i nienadzorowany oraz najważniejsze informacje dotyczące przygotowania danych do treningu i testowania algorytmu.
+
+
+
+% Jak podaje strona Seohost "\textit{W kontekście biznesowym technologie sztucznej inteligencji opierają się przede wszystkim na uczeniu maszynowym, głębokim uczeniu się na potrzeby analizy danych, generowania prognoz, kategoryzacji obiektów, przetwarzania języka naturalnego, rekomendacji i inteligentnego wyszukiwania danych.}"
+
+
+    \subsection{Definicja uczenia maszynowego}
+    Uczenie maszynowe jest poddziedziną sztucznej inteligencji (ang. \textit{Artificial Intelligence}), którą rozumie się jako umiejętność podejmowania samodzielnie decyzji przez urządzenie lub program, który wchodzi w interakcję z otoczeniem. Techniki uczenia maszynowego służą do przetwarzania danych z jego zmiennego środowiska, czego wynikiem jest bieżące dostosowywanie się do nowych informacji, na podstawie wcześniejszego doświadczenia lub nauki.
+    
+    Termin ten definiuje zdolność oprogramowania do rozpoznawania trendów z dużej ilości zgromadzonych danych (np. \textit{Big Data}). Jak trafnie ujęli autorzy książki \cite{valentino2018uczenie} uczenie maszynowe jest narzędziem stosowanym w zadaniach wielkoskalowego przetwarzania danych i świetnie nadaje się do obsługi złożonych zbiorów danych — tam, gdzie występuje ogromna liczba zmiennych i własności. Jedną z mocnych stron wielu technik uczenia maszynowego, a w szczególności uczenia głębokiego jest to, że techniki te pozwalają osiągnąć najlepsze wyniki wtedy, gdy są stosowane w odniesieniu do dużych zestawów danych — wtedy poprawiają się możliwości analizy i zdolność prognozowania.
+    
+    W wielu rozwiązaniach, wymagających ciągłego modyfikowania programu lub korzystania z nadmiernej ilości reguł, algorytm ML upraszcza aplikację oraz jej szybkość w porównaniu z tradycyjnymi metodami programowania, opierającymi się na statycznych i ręcznie tworzonych regułach i logice. Komputer ma możliwość uczenia i doskonalenia się w miarę zdobywania doświadczenia bez konieczności dostrajania algorytmu przez programistę. Jak zacytowano Tom Mitchell'a w książce \cite{geron2020uczenie} program komputerowy uczy się na podstawie doświadczenia E w odniesieniu do jakiegoś zadania T i pewnej miary wydajności P, jeśli jego wydajność (mierzona przez P) wobec zadania T wzrasta wraz z nabywaniem doświadczenia E.
+    
+    Do czterech głównych obszarów technik uczenia maszynowego zalicza się uczenie nadzorowane, nienadzorowane, półnadzorowane, przez wzmacnianie, wsadowe oraz przyrostowe. W ramach niniejszej pracy pochylono się nad dwoma pierwszymi zagadnieniami. Techniki te swoje zastosowania znajdują w dziedzinach takich jak: medycyna, finanse, marketing, wykrywanie oszustw i bezpieczeństwo, telekomunikacja oraz wiele innych.
+
+    
+    \subsubsection{Uczenie nadzorowane}
+    Uczenie nadzorowane (ang. \textit{supervised learning}) jest sposobem uczenia modelu, w którym zbiór danych treningowych, na których uczy się algorytm, posiada przypisane rozwiązanie problemu, tzw. etykiety albo klasy. Określane również jako uczenie z nauczycielem, znajduje zastosowanie przede wszystkim w dwóch głównych obszarach jakimi są regresja i klasyfikacja. Pierwszy odnosi się do predykcji ciągłych wartości liczbowych. Natomiast drugi, definiuje się jako przypisanie danych do odpowiedniej kategorii. Poniższy wykres przedstawia podział danych w zależności od klasy.
+    
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{nadzorowane.png}
+        \caption{Przykład uczenia nadzorowanego \cite{valentino2018uczenie} }
+        \label{nadzorowane}
+    \end{figure}
+
+    Do najpopularniejszych algorytmów nadzorowanego uczenia maszynowego zaliczamy:
+    \begin{itemize}
+        \item drzewa decyzyjne i lasy losowe
+        \item regresja liniowa
+        \item regresja logistyczna
+        \item metoda k-najbliższych sąsiadów
+        \item maszyny wektorów nośnych
+        \item sieci neuronowe
+    \end{itemize}
+
+    
+    \subsubsection{Uczenie nienadzorowane}
+    Uczenie nienadzorowane (ang. \textit{unsupervised learning}) to metoda trenowania algorytmu, w której dane wejściowe nie mają przypisanych klas ani etykiet. Przekazywane do modelu nieoznakowane dane pozostawiają mu zadanie samodzielnego znalezienia wzorców i zależności. Proces ten nazywa się również uczeniem bez nauczyciela. Na rys. \ref{nienadzorowane} zaprezentowano sposób klasteryzacji zbioru punktów, który tworzy trzy podzbiory.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{nienadzorowane.png}
+        \caption{Przykład uczenia nienadzorowanego \cite{valentino2018uczenie}}
+        \label{nienadzorowane}
+    \end{figure}
+
+    Najczęściej stosowanymi algorytmami nienadzorowanego uczenia maszynowego są:
+    \begin{itemize}
+        \item analiza skupień (ang. \textit{clustering})
+        \item wizualizacja i redukcja nadmiarowości
+        \item wykrywanie anomalii i nowości
+        \item uczenie z użyciem reguł asocjacyjnych
+    \end{itemize}
+
+
+    \subsection{Przygotowanie danych}
+    Niezwykle istotnym aspektem w dziedzinie uczenia maszynowego są dane. Algorytm ML uczy się na podstawie dostarczanych danych. Program może uczyć się skutecznie tylko wtedy, gdy te dane są czyste i kompletne. Nawet najbardziej zaawansowany algorytm może dostarczać niedokładne i wprowadzające w błąd rezultaty, jeśli informacje na wejście nie zostaną odpowiednio przygotowane.
+
+    Dane można pozyskać między innymi: z istniejących zbiorów danych, za pomocą techniki automatycznego pozyskiwania danych ze stron internetowych (ang. \textit{web scraping}), za pomocą zewnętrznego API, czy też poprzez generowanie własnych danych. Przygotowując swój własny zbiór danych (ang. \textit{dataset}), warto kierować się podstawowymi zasadami, które zapewnią jego jakość, spójność i przydatność w rozwiązaniu danego problemu. Najpierw, należy określić cel i sposób predykcji algorytmu. Problem, który chce się rozwiązać, zwykle mieści się w jednej z trzech kluczowych kategorii: klasyfikacja, regresja lub klasteryzacja. Przechodząc do czyszczenia danych należy ujednolicić ich format, usunąć duplikaty i błędne rekordy oraz uzupełnić brakujące wiersze w zbiorze.
+    
+    Gotowy zbiór danych powinien zawierać od kilku do kilkuset tysięcy, a nawet milionów rekordów, zależnie od złożoności zadania. Dane w zbiorze należy podzielić na treningowe, walidacyjne oraz testowe. Stosunek podziału tych podzbiorów wynosi odpowiednio 70\%, 15\% i 15\%. W ramach niniejszego projektu inżynierskiego posłużono się częściej stosowaną techniką podziału zbioru danych. Mowa o podziale nieuwzględniającym danych walidacyjnych. Stosunek danych treningowych do danych testowych zwykle wynosi odpowiednio 80\% i 20\%. W obu podejściach warto pamiętać, iż wraz ze wzrostem rozmiaru całego zbioru danych można przeznaczyć proporcjonalnie większą część na zbiór treningowy, pozostawiając odpowiednią ilość danych na walidację i testy. Na przykład, z 1 000 000 rekordów pozostawiając 5\% na dane walidacyjne, 5\% na dane testowe oraz resztę na dane treningowe, taki podział w zupełności wystarczy. Dane walidacyjne i treningowe będą posiadały optymalną ilość — po 50 000 próbek.
+
+    Dwoma niezwykle istotnymi zagadnieniamim w procesie nauki algorytmu z danych są nadmierne dopasowanie (ang. \textit{overfitting}) oraz niedostateczne dopasowanie (ang. \textit{underfitting}). Pierwszy termin odnosi się do sytuacji, w której predykcje modelu zbyt mocno dopasowują się do danych treningowych, co skutkuje brakiem generalizacji, gdy na wejściu algorytmu pojawią się nowe dane. Oznacza to, że model "uczy się na pamięć", zamiast rzeczywiście rozumieć zależności w danych i wyciągać ogólne wnioski. Przyczynami tego zjawiska są: zaszumiony lub zbyt mały zbiór danych, zastosowanie algorytmu o zbyt dużej złożoności, brak regularyzacji, czy też zbyt dużo epok treningowych. Niedostateczne dopasowanie modelu charakteryzuje się brakiem wykrywania istotnych zależności. Algorytm nie jest w stanie poprawnie przewidywać wyników na podstawie nowych danych na wejściu. Powodami tego zjawiska są: za mała ilość istotnych cech, za silna regularyzacja, zbyt prosty lub błędnie dobrany model. Ryzyko niedostatecznego dopasowania jest znacznie mniejsze, stąd większy nacisk kładzie się na uniknięcie nadmiernego dopasowania modelu. Poniżej zaprezentowano przykład obrazujący te zagadnienia.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\linewidth]{overfitting_underfitting.png}
+        \caption{Przykłady predykcji modelu uczenia maszynowego. Po lewej stronie nadmierne dopasowanie, po środku niedostateczne dopasowanie, po prawej stronie optymalne dopasowanie \cite{krohn2022uczenie} }
+        \label{overfitting}
+    \end{figure}
+    
+
+
+\section{Wprowadzenie do uczenia głębokiego}\setcounter{figure}{0}
+W tym rozdziale skupiono się na zdefiniowaniu uczenia głębokiego (ang. \textit{deep learning}). W celu lepszego zrozumienia jego działania wyjaśniono czym jest sztuczny neuron oraz sztuczna sieć neuronowa. Ponadto, opisano najważniejsze właściwości konwolucyjnych i rekurencyjnych sieci neuronowych.
+    
+    \subsection{Sztuczny neuron}
+    W roku 1943 Walter Pitts oraz Warren McCulloch przedstawili publikacją, w której ujęli matematyczny model biologicznego neuronu. Praca ta stanowiła fundament dla zrozumienia obliczeniowych właściwości neuronów i rozwoju sztucznych sieci neuronowych.
+    
+    Na wstępie, warto zdefiniować sztuczny neuron. Jest to matematyczny model, mający na celu odzwierciedlenie pracy biologicznego neuronu. Na wejścia sztucznego neuronu podawane są wyjścia jednostek połączonych do danego neuronu. Dla każdej z wartości wejściowych przypisana jest konkretna waga, oznaczająca jak istotna jest dana informacja.
+
+    
+    
+    Następuje sumowanie iloczynów odpowiednich wartości wejściowych $ x_{1,2,3,...,n} $ i ich wag $ w_{1,2,3,...,n} $. Następnie, do tej sumy dodawana jest wartość odchylenia $ b $ (ang. \textit{bias}), której celem jest umożliwienie modelowi lepszego przewidywania wyników w odpowiedzi na dane wejściowe poprzez przesunięcie funkcji aktywacji $ y $. Takim sposobem, znając wynik, można na jego podstawie obliczyć wartość tejże funkcji w następujący sposób.
+
+    \begin{equation}
+    \begin{aligned}
+        z(x) &= \sum_{i=1}^{n} x_i w_i + b \\[10pt]
+        y &= f(z)
+    \end{aligned}
+    \label{rownanie-neuronu}
+    \end{equation}
+
+    Funkcja aktywacji nie tylko określa wyjście neuronu, ale również pozwala wprowadzić nieliniowość do sieci neuronowej. Za jej przyczyną określa się czy neuron jest aktywny oraz w jakim stopniu. Do najpopularniejszych funkcji aktywacji należą: sigmoid, tangens hiperboliczny, ReLU, LeakyReLU oraz softmax.
+    
+    %charakterystykę neuronu. Popularne neurony: sigmoidalny, tangensowy ReLU. Wybór neuronu (a raczej funkcji aktywacji) zależy od celu ich stosowania. 
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.75\linewidth]{funkcje_aktywacji.png}
+        \caption{Najczęściej stosowane funkcje aktywacji}
+        \label{funkcje-aktywacji}
+    \end{figure}
+    
+    \subsection{Sztuczna sieć neuronowa}
+    Model sztucznej sieci neuronowej składa się z warstwy wejściowej, wyjściowej oraz tak zwanych warstw ukrytych. W teorii sieć może zawierać nieskończenie wiele sztucznych neuronów. Jak trafnie definiuje strona firmy IBM [? ? ?]: ”Sztuczne sieci neuronowe to uproszczony model procesu przetwarzania informacji przez ludzki umysł. Polega on na symulowaniu dużej liczby połączonych wzajemnie jednostek przetwarzania, które przypominają abstrakcyjne wersje neuronów".
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\linewidth]{siec_neuronowa.png}
+        \caption{Przykład średniogłębokiej, w pełni połączonej sztucznej sieci neuronowa}
+        \label{sztuczna-siec-neuronowa}
+    \end{figure}
+    
+    Warstwa wejściowa stanowi reprezentację danych podanych do sieci. Każdy neuron odzwierciedla pojedynczą wartość z ciągu danych na wejście, więc nie są wykonywane obliczenia, lecz następuje przekazanie wartości wejściowych do kolejnych warstw. Liczba neuronów w warstwie wejściowej jest równa liczbie cech w danych wejściowych. W warstwach ukrytych dokonują się główne obliczenia w sztucznej sieci. To dzięki nim, model uczy się złożonych wzorców w danych podczas treningu. Ilość tych warstw oraz neuronów jest dowolna. Warstwa wyjściowa generuje wynik lub predykcję na podstawie przetworzonych danych. Liczba neuronów zależy od tego który z trzech problemów chcemy rozwiązać. Dla klasyfikacji wieloklasowej, liczba neuronów równa się liczbie klas. Na ich wyjściu generowane są prawdopodobieństwa przynależności do poszczególnych kategorii za pomocą funkcji aktywacji $ softmax $. Funkcja ta przekształca wyjścia neuronów na prawdopodobieństwa sumujące się do $ 1 $. Dla klasyfikacji binarnej zazwyczaj stosuje się jeden neuron z funkcją aktywacji \textit{sigmoid}. Regresję stosuje się w przypadku predykcji ciągłej wartości numerycznej stosując jeden neuron.
+
+    Sztuczne sieci neuronowe można podzielić na płytkie, średniogłębokie oraz głębokie. Sieć płytka posiada jedną warstwę ukrytą lub wcale, średniogłęboka dwie warstwy ukryte, a głęboka trzy lub więcej. Dla każdego z tych wariantów istotnym terminem jest propagacja w przód (ang. \textit{forward propagation}). Jest to proces obliczenia wyjścia sieci, przekazując dane wejściowe przez jej warstwy, aż do warstwy wyjściowej. Dla każdego neuronu ze wszystkich warstw wykonywane jest obliczenie wartości funkcji aktywacji jak w równaniu \ref{rownanie-neuronu}.
+    
+    Najprostszym przykładem sieci neuronowej jest sieć typu wielowarstowy perceptron (ang. \textit{multilayer perceptron}). Jest to w pełni połączona sieć neuronowa — każdy neuron danej warstwy jest połączony ze wszystkimi neuronami znajdującymi się w kolejnej warstwie. Architektura ta jest niezwykle istotna przy modelowaniu nieliniowych zależności między wartościami wejściowymi, a ich predykcjami. Pomimo posiadania prostej struktury, stanowi fundament w projektowaniu bardziej zaawansowanych architektur takich jak konwolucyjne czy rekurencyjne sieci neuronowe.
+
+    
+    \subsection{Trening sztucznej sieci neuronowej}
+    Treningiem sztucznej sieci neuronowej nazywamy iteracyjny proces dostrajania wag i odchyleń w celu doskonalenia predykcji wyników na wyjściu sieci — minimalizacja różnic pomiędzy przewidywaniami, a faktycznymi wartościami docelowymi. 
+
+    Doskonalenie predykcji sieci polega na trzech fundamentalnych etapach. Na początek, następuje podaniu danych na wejście sieci (np. obraz, tekst lub wekor liczb) w celu rozpoczęcia propagacji w przód (ang. \textit{feedforward}). W drugim etapie, po otrzymaniu predykcji sieci następuje porównanie jej z wartością docelową, do czego stosuje się obliczenie funkcji straty (inaczej funkcji kosztu) — różnicy wyjścia sieci, a rzeczywistą etykietą. Jako trzeci etap, następuje propagacja wstecz (ang. \textit{backpropagation}). W tym kroku aktualizane są wagi neuronów za pomocą metody gradientu prostego \ref{gradient-prosty}, w celu poprawy obliczeń skutkującymi lepszą predykcją. Dąży się do minimalizacji funkcji straty, czego rezultatem jest zwiększenie skuteczności generowanych wyników dzięki zoptymalizowanym parametrom sieci. Błąd średniokwadratowy (ang. \textit{mean squared error} — MSE) stosuje się do obliczenia kosztu w problemach regresji. Natomiast, binarna entropia skrośna (ang. \textit{binary cross-entropy} — BCE) \ref{loss-functions} jest powszechnie wykorzystywana w problemie klasyfikacji binarnej.
+
+    \begin{equation}
+    \begin{aligned}
+        {W_i}^{(j+1)} &= {W_i}^{(j)} - \eta \frac{ \partial L}{ \partial W_i}
+    \end{aligned}
+    \label{gradient-prosty}
+    \end{equation}
+    
+    \begin{equation}
+    \begin{aligned}
+        MSE &= \frac{1}{n} \sum_{i=1}^{n} ( y_i - \hat{y}_i)^2\\[10pt]
+        BCE &= - \frac{1}{n} \sum_{i=1}^{n} [  y_i \ln( \hat{y}_i ) + (1 - y_i) \ln( 1 - \hat{y}_i )  ] 
+    \end{aligned}
+    \label{loss-functions}
+    \end{equation}
+
+    We wzorze \ref{gradient-prosty} $ W_i $ oznacza macierz wag, $ \eta $ to współczynnik uczenia, a $ \frac{ \partial L}{ \partial W_i} $ oznacza gradient funkcji straty $ L $ względem macierzy wag $ W $. Natomiast we wzorze \ref{loss-functions} dla każdej próki o indeksie $ i $ wyliczany jest błąd pomiędzy rzeczywistą etykietą $ y_i $, a prognozą sieci $ \hat{y}_i $. Z kolei $ n $ jest liczbą próbek w zbiorze danych.
+
+    Hiperparametrami nazywa się parametry, których wartości używane są do kontrolowania procesu uczenia oraz zwiększenia skuteczności i wydajności sztucznej sieci neuronowej. Na wstępie, zaleca się podzielić zbiór treningowy na mniejsze partie danych o rozmiarze (ang. \textit{batch size}) równym $ 2^n $. Celem takiego podejścia jest optymalizacja procesu uczenia modelu, dzięki mniejszym wymaganiom pamięciowym, przez co możemy trenować sieć na ogromnych zbiorach danych przy niewystarczających zasobach obliczeniowych RAM, GPU lub CPU. Następnie warto ustalić ilość iteracji treningu — epok treningowych (ang. \textit{epochs}). Epoka oznacza jedno kompletne przejście całego zestawu danych treningowych przez algorytm uczenia się. Każda epoka składa się z tylu iteracji ile jest mniejszych partii danych. Dla każdej z tych iteracji wykonywana jest propagacja w przód oraz propagacja wstecz. W treningu modelu, równie istotnym aspektem jest współczynnik uczenia (ang. \textit{learning rate}). Określa on, jak bardzo zmieniają się wagi sieci neuronowej w odniesieniu do minimalizacji funkcji kosztu — regulacja wielkości kroku w optymalizacji gradientowej. Kontynuując, jako optymalizator (ang. \textit{optimizer}) rozumie się algorytm używany do aktualizacji wag sieci w celu zmniejszenia kosztu, w odpowiedzi na obliczony gradient w propagacji wstecznej. Do popularnych optymalizatorów zaliczamy: SGD (ang. \textit{stochastic gradient decent}), Adam (ang. \textit{adaptive moment estimation}), RMSprop (ang. \textit{root mean square propagation}) oraz Adagrad (ang. \textit{adaptive gradient algorithm}). Jako ostatni hiperparametr omówiono dropout. Jest to technika regularyzacji stosowana w sieciach, która zapobiega przeuczeniu się modelu i pozwala na lepszą generalizację wyniku. Polega to na dezaktywacji losowej części neuronów z zadanym prawdopodobieństwem w trakcie treningu. 
+
+
+    \subsection{Definicja uczenia głębokiego}
+    Uczenie głębokie wywodzi się z obszaru sztucznych sieci neuronowych, będących poddziedziną uczenia maszynowego. Rozwiązanie inspirowane budową i funkcjonowaniem ludzkiego mózgu stosuje wielowarstwowe sieci neuronowe, zwane głębokimi sieciami neuronowymi (ang. \textit{deep neural networks}), składającymi się z trzech lub więcej ukrytych warstw neuronów. Calem nadawania głębokości sieci (stosowania wielu warstw) jest przystosowanie modelu do przetwarzania coraz bardziej złożonych reprezentacji danych oraz rozwiązywania skomplikowanych problemów. Poniżej zaprezentowano hierarchię omawianych zagadnień na wspólnym diagramie.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\linewidth]{diagram_venna.png}
+        \caption{Diagram Venna}
+        \label{diagram-venna}
+    \end{figure}
+    
+    Dzisiejszą popularność sztucznej inteligencji zawdzięczamy nie tylko dzięki ciężkiej pracy badaczy tworzących nowe rozwiązania, ale również dzięki rozwojowi sprzętu wykonującego obliczenia. Procesor graficzny (ang. \textit{graphics processing unit} — GPU) jest jednostką obliczeniową znajdującą się na kartach graficznych, stosowaną do przetwarzania grafiki komputerowej. Zaprojektowany do wykonywania wielu obliczeń równocześnie, korzystają z dużej liczby rdzeni obliczeniowych, nawet kilku tysięcy. Co więcej, chmury obliczeniowe takie jak Google Cloud, AWS oraz Microsoft Azure oferują dostęp do zaawansowanych zasobów obliczeniowych, bez konieczności inwestowania w drogi sprzęt komputerowy. Dużą popularność i efektywność uczenia głębokiego zawdzięczamy również dzięki dostępności dużych i różnorodnych zbiorów danych (ang. \textit{Big Data}). Ponadto, na bieżąco obserwuje się rozwój bibliotek jak TensorFlow, Keras czy PyTorch ułatwiających projektowanie wyspecjalizowanych modeli uczenia maszynowego. Do innowacyjnych architektur głębokich sieci neuronowych zalicza się: konwolucyjne i rekurencyjne sieci neuronowe, sieci GAN oraz transformery.
+
+    
+    \subsubsection{Splotowe sieci neuronowe CNN}
+    Konwolucyjna sieć neuronowa (ang. \textit{convolutional neural network}) jest wariantem głębokiej sieci neuronowej, składającym się z jednej lub więcej warstw konwolucyjnych, których zadaniem jest wykrywanie określonych wzorców. Stosują one operację konwolucji na danych wejściowych, czyli przesuwanie tzw. filtru (ang. \textit{kernel}) po np. dwuwymiarowym obrazie od lewej do prawej strony z góry na dół o zadany krok (ang. \textit{stride}). 
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\linewidth]{przesuwanie_filtru_cnn.png}
+        \caption{Przesuwanie filtru po obrazie 2D z krokiem 1 \cite{valentino2018uczenie} }
+        \label{konwolucja}
+    \end{figure}
+    
+    Filtr jest macierzą o wymiarze 1D lub 2D w zależności od wejścia. W przypadku przetwarzania obrazów często stosuje się filtry 3x3 lub 5x5. (ang. \textit{zero-padding}) (max pooling)
+    
+    są szeroko stoswane w wizji komputerowej i przetwarzaniu języka naturalnego.
+
+    [RYSUNEK]
+
+    [WARSTWA SPLOTOWA, FILTRY, KERNEL, PARAMETRY]
+
+    [POOL, MAXPOOL]
+
+    [WARSTWY W PEŁNI POŁĄCZONE]
+
+    [ZASTOSOWANIE]
+
+    
+    \subsubsection{Rekurencyjne sieci neuronowe RNN}
+    [DEFINICJA] RNN
+
+    [STRUKTURA]
+
+    [TYPOWE PROBLEMY: ZANIKAJĄCY/ EKSPLODUJĄCY GRADIENT]
+
+    [LSTM, GRU]
+
+    [ZASTOSOWANIE]
+
+
+\section{Rozpoznanie korekcyjnych kodów blokowych}
+Korekcyjne kody blokowe
+
+    \subsection{Definicja kodów blokowych}
+    Definicja
+    
+    \subsection{Technika kodowania korekcyjnego}
+    Technika
+    
+    \subsection{Definicja korekcyjnych kodów blokowych}
+    Czy potrzebna będzie?
+        
+    \subsubsection{Kod BCH}
+    BCH
+    
+    \subsubsection{Kod Reeda-Solomona}
+    Reed-Solomon
+        
+    \subsection{Dekodowanie korekcyjnych kodów blokowych}
+    Dekodowanie
+    
+    \subsection{Techniki uczenia maszynowego stosowane do dekodowania kodów 	korekcyjnych}
+    Czy o tym nie powiem opisując przegląd i porównanie artykułów?
+    
+    \subsection{Techniki uczenia głębokiego, do poprawy jakości dekodowania wybranych korekcyjnych kodów blokowych }
+    Chyba wspomnę w przeglądzie literatury
+
+
+\section{Przegląd literatury}
+Google Scholar
+
+    \subsection{XYZ}
+    xyz
+
+\section{Implementacja wybranego algorytmu
+}
+Zdecydowałem się na artykuł z odszumianiem
+
+% \section{Implementacja wybranego algorytmu uczenia głębokiego do poprawy jakości dekodowania wybranego korekcyjnego kodu blokowego 
+% }
+    \subsection{Cel badania}
+    Cel
+    
+    \subsection{Narzędzia programistyczne}
+    PyTorch, Anaconda, Python, Matlab, Jupyter Notebook
+    
+    \subsection{Zbiór danych}
+    Sam wygenerowałem
+    
+    \subsection{Przebieg badania}
+    Dużo plików
+    
+    \subsection{Analiza wyników}
+    Zaskakująco dobrze
+    
+    \subsection{Wnioski}
+    Wnioski
+
+\section{Podsumowanie}
+Podsumowując, 
+\newpage
+
+
+% \bibliographystyle{plain}
+\bibliography{literatura.bib}
+\newpage
+
+
+\listoffigures
+\addcontentsline{toc}{section}{Wykaz rysunków} % Dodanie do spisu treści
+\newpage
+
+
+\listoftables
+\addcontentsline{toc}{section}{Wykaz tabel}
+\newpage
+
+\end{document}
