@@ -16,6 +16,7 @@
 \usepackage{titlesec}
 \usepackage{hyperref}
 \usepackage[labelsep=period]{caption}
+\usepackage[xindy]{imakeidx}
 
 % #####################################################
 
@@ -84,6 +85,12 @@
     \item[] RAM
     \item[] GPU
     \item[] CPU
+    \item[] RGB
+    \item[] QR
+    \item[] GPS
+    \item[] MRI
+    \item[] CT
+    \item[] DNN - 
     \item[] ANN - Sztuczna sieć neuronowa (ang. \textit{Artificial Neural Network})
     \item[] CNN - Konwolucyjna sieć neuronowa (ang. \textit{Convolutional Neural Network})
     \item[] RNN - Rekurencyjna sieć neuronowa (ang. \textit{Recurrent Neural Network})
@@ -129,7 +136,7 @@ W tym rozdziale omówiono podstawowe definicje i pojęcia kryjące się za termi
         \label{nadzorowane}
     \end{figure}
 
-    Do najpopularniejszych algorytmów nadzorowanego uczenia maszynowego zaliczamy:
+    \noindent Do najpopularniejszych algorytmów nadzorowanego uczenia maszynowego zaliczamy:
     \begin{itemize}
         \item drzewa decyzyjne i lasy losowe
         \item regresja liniowa
@@ -150,7 +157,7 @@ W tym rozdziale omówiono podstawowe definicje i pojęcia kryjące się za termi
         \label{nienadzorowane}
     \end{figure}
 
-    Najczęściej stosowanymi algorytmami nienadzorowanego uczenia maszynowego są:
+    \noindent Najczęściej stosowanymi algorytmami nienadzorowanego uczenia maszynowego są:
     \begin{itemize}
         \item analiza skupień (ang. \textit{clustering})
         \item wizualizacja i redukcja nadmiarowości
@@ -185,9 +192,14 @@ W tym rozdziale skupiono się na zdefiniowaniu uczenia głębokiego (ang. \texti
     
     Na wstępie, warto zdefiniować sztuczny neuron. Jest to matematyczny model, mający na celu odzwierciedlenie pracy biologicznego neuronu. Na wejścia sztucznego neuronu podawane są wyjścia jednostek połączonych do danego neuronu. Dla każdej z wartości wejściowych przypisana jest konkretna waga, oznaczająca jak istotna jest dana informacja.
 
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.75\linewidth]{sztuczny_neuron.png}
+        \caption{Matematyczny model sztucznego neuronu}
+        \label{sztuczny-neuron}
+    \end{figure}
     
-    
-    Następuje sumowanie iloczynów odpowiednich wartości wejściowych $ x_{1,2,3,...,n} $ i ich wag $ w_{1,2,3,...,n} $. Następnie, do tej sumy dodawana jest wartość odchylenia $ b $ (ang. \textit{bias}), której celem jest umożliwienie modelowi lepszego przewidywania wyników w odpowiedzi na dane wejściowe poprzez przesunięcie funkcji aktywacji $ y $. Takim sposobem, znając wynik, można na jego podstawie obliczyć wartość tejże funkcji w następujący sposób.
+    Następuje sumowanie iloczynów odpowiednich wartości wejściowych $ x_{1,2,3, \dots,n} $ i ich wag $ w_{1,2,3, \dots,n} $. Następnie, do tej sumy dodawana jest wartość odchylenia $ b $ (ang. \textit{bias}), której celem jest umożliwienie modelowi lepszego przewidywania wyników w odpowiedzi na dane wejściowe poprzez przesunięcie funkcji aktywacji $ y $. Takim sposobem, znając wynik, można na jego podstawie obliczyć wartość tejże funkcji w następujący sposób.
 
     \begin{equation}
     \begin{aligned}
@@ -197,7 +209,7 @@ W tym rozdziale skupiono się na zdefiniowaniu uczenia głębokiego (ang. \texti
     \label{rownanie-neuronu}
     \end{equation}
 
-    Funkcja aktywacji nie tylko określa wyjście neuronu, ale również pozwala wprowadzić nieliniowość do sieci neuronowej. Za jej przyczyną określa się czy neuron jest aktywny oraz w jakim stopniu. Do najpopularniejszych funkcji aktywacji należą: sigmoid, tangens hiperboliczny, ReLU, LeakyReLU oraz softmax.
+    \noindent Funkcja aktywacji nie tylko określa wyjście neuronu, ale również pozwala wprowadzić nieliniowość do sieci neuronowej. Za jej przyczyną określa się czy neuron jest aktywny oraz w jakim stopniu. Do najpopularniejszych funkcji aktywacji należą: sigmoid, tangens hiperboliczny, ReLU, LeakyReLU oraz softmax.
     
     %charakterystykę neuronu. Popularne neurony: sigmoidalny, tangensowy ReLU. Wybór neuronu (a raczej funkcji aktywacji) zależy od celu ich stosowania. 
     
@@ -245,7 +257,7 @@ W tym rozdziale skupiono się na zdefiniowaniu uczenia głębokiego (ang. \texti
     \label{loss-functions}
     \end{equation}
 
-    We wzorze \ref{gradient-prosty} $ W_i $ oznacza macierz wag, $ \eta $ to współczynnik uczenia, a $ \frac{ \partial L}{ \partial W_i} $ oznacza gradient funkcji straty $ L $ względem macierzy wag $ W $. Natomiast we wzorze \ref{loss-functions} dla każdej próki o indeksie $ i $ wyliczany jest błąd pomiędzy rzeczywistą etykietą $ y_i $, a prognozą sieci $ \hat{y}_i $. Z kolei $ n $ jest liczbą próbek w zbiorze danych.
+    \noindent We wzorze \ref{gradient-prosty} $ W_i $ oznacza macierz wag, $ \eta $ to współczynnik uczenia, a $ \frac{ \partial L}{ \partial W_i} $ oznacza gradient funkcji straty $ L $ względem macierzy wag $ W $. Natomiast we wzorze \ref{loss-functions} dla każdej próki o indeksie $ i $ wyliczany jest błąd pomiędzy rzeczywistą etykietą $ y_i $, a prognozą sieci $ \hat{y}_i $. Z kolei $ n $ jest liczbą próbek w zbiorze danych.
 
     Hiperparametrami nazywa się parametry, których wartości używane są do kontrolowania procesu uczenia oraz zwiększenia skuteczności i wydajności sztucznej sieci neuronowej. Na wstępie, zaleca się podzielić zbiór treningowy na mniejsze partie danych o rozmiarze (ang. \textit{batch size}) równym $ 2^n $. Celem takiego podejścia jest optymalizacja procesu uczenia modelu, dzięki mniejszym wymaganiom pamięciowym, przez co możemy trenować sieć na ogromnych zbiorach danych przy niewystarczających zasobach obliczeniowych RAM, GPU lub CPU. Następnie warto ustalić ilość iteracji treningu — epok treningowych (ang. \textit{epochs}). Epoka oznacza jedno kompletne przejście całego zestawu danych treningowych przez algorytm uczenia się. Każda epoka składa się z tylu iteracji ile jest mniejszych partii danych. Dla każdej z tych iteracji wykonywana jest propagacja w przód oraz propagacja wstecz. W treningu modelu, równie istotnym aspektem jest współczynnik uczenia (ang. \textit{learning rate}). Określa on, jak bardzo zmieniają się wagi sieci neuronowej w odniesieniu do minimalizacji funkcji kosztu — regulacja wielkości kroku w optymalizacji gradientowej. Kontynuując, jako optymalizator (ang. \textit{optimizer}) rozumie się algorytm używany do aktualizacji wag sieci w celu zmniejszenia kosztu, w odpowiedzi na obliczony gradient w propagacji wstecznej. Do popularnych optymalizatorów zaliczamy: SGD (ang. \textit{stochastic gradient decent}), Adam (ang. \textit{adaptive moment estimation}), RMSprop (ang. \textit{root mean square propagation}) oraz Adagrad (ang. \textit{adaptive gradient algorithm}). Jako ostatni hiperparametr omówiono dropout. Jest to technika regularyzacji stosowana w sieciach, która zapobiega przeuczeniu się modelu i pozwala na lepszą generalizację wyniku. Polega to na dezaktywacji losowej części neuronów z zadanym prawdopodobieństwem w trakcie treningu. 
 
@@ -263,76 +275,190 @@ W tym rozdziale skupiono się na zdefiniowaniu uczenia głębokiego (ang. \texti
     Dzisiejszą popularność sztucznej inteligencji zawdzięczamy nie tylko dzięki ciężkiej pracy badaczy tworzących nowe rozwiązania, ale również dzięki rozwojowi sprzętu wykonującego obliczenia. Procesor graficzny (ang. \textit{graphics processing unit} — GPU) jest jednostką obliczeniową znajdującą się na kartach graficznych, stosowaną do przetwarzania grafiki komputerowej. Zaprojektowany do wykonywania wielu obliczeń równocześnie, korzystają z dużej liczby rdzeni obliczeniowych, nawet kilku tysięcy. Co więcej, chmury obliczeniowe takie jak Google Cloud, AWS oraz Microsoft Azure oferują dostęp do zaawansowanych zasobów obliczeniowych, bez konieczności inwestowania w drogi sprzęt komputerowy. Dużą popularność i efektywność uczenia głębokiego zawdzięczamy również dzięki dostępności dużych i różnorodnych zbiorów danych (ang. \textit{Big Data}). Ponadto, na bieżąco obserwuje się rozwój bibliotek jak TensorFlow, Keras czy PyTorch ułatwiających projektowanie wyspecjalizowanych modeli uczenia maszynowego. Do innowacyjnych architektur głębokich sieci neuronowych zalicza się: konwolucyjne i rekurencyjne sieci neuronowe, sieci GAN oraz transformery.
 
     
-    \subsubsection{Splotowe sieci neuronowe CNN}
-    Konwolucyjna sieć neuronowa (ang. \textit{convolutional neural network}) jest wariantem głębokiej sieci neuronowej, składającym się z jednej lub więcej warstw konwolucyjnych, których zadaniem jest wykrywanie określonych wzorców. Stosują one operację konwolucji na danych wejściowych, czyli przesuwanie tzw. filtru (ang. \textit{kernel}) po np. dwuwymiarowym obrazie od lewej do prawej strony z góry na dół o zadany krok (ang. \textit{stride}). 
-
-    \begin{figure}[H]
-        \centering
-        \includegraphics[width=0.8\linewidth]{przesuwanie_filtru_cnn.png}
-        \caption{Przesuwanie filtru po obrazie 2D z krokiem 1 \cite{valentino2018uczenie} }
-        \label{konwolucja}
-    \end{figure}
+        \subsubsection{Splotowa sieć neuronowe CNN}
+        Znajdująca swoje szerokie zastosowanie w wizji komputerowej i przetwarzaniu języka naturalnego, splotowa sieć neuronowa (ang. \textit{convolutional neural network}) jest wariantem głębokiej sieci neuronowej, składającym się z jednej lub więcej warstw konwolucyjnych. Ich zadaniem jest wykrywanie określonych wzorców w danych wejściowych. Każda z nich posiada tzw. filtry (ang. \textit{kernel}), będące macierzami dwu lub jednowymiarowymi, w zależności od wymiaru danych wejściowych. W przypadku przetwarzania obrazów często stosuje się filtry o rozmiarach 3x3 do nawet 7x7. Podczas przetwarzania wektorów kernele często mają rozmiary od 1x3 do 1x15. Filtry umożliwają efektywniejsze przetwarzanie obrazów wysokiej rozdzielczości (Full HD, 4K lub 8K), które dodatkowo posiadają więcej niż jeden kanał, jak na przykład kanały RGB.
+        
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.5\linewidth]{filtry_rgb.png}
+            \caption{Przykład filtrów o rozmiarach 3x3 stosowanych do przetwarzania obrazu posiadającego trzy kanały RGB \cite{krohn2022uczenie} }
+            \label{filtry-rgb}
+        \end{figure}
+        
+        Za pomocą filtrów stosuje się operację konwolucji na danych wejściowych czyli przesuwanie tzw. filtru, po np. dwuwymiarowym obrazie od lewej do prawej strony z góry na dół o zadany krok (ang. \textit{stride}). Z każdym kolejnym przesunięciem dokonywana jest operacja splotu — mnożenie elementów filtru (macierzy) z wartościami pikseli na wejściu, które są obecnie pokrywane. 
     
-    Filtr jest macierzą o wymiarze 1D lub 2D w zależności od wejścia. W przypadku przetwarzania obrazów często stosuje się filtry 3x3 lub 5x5. (ang. \textit{zero-padding}) (max pooling)
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.7\linewidth]{przesuwanie_filtru_cnn.png}
+            \caption{Przesuwanie filtru po obrazie 2D z krokiem 1 \cite{valentino2018uczenie} }
+            \label{konwolucja}
+        \end{figure}
     
-    są szeroko stoswane w wizji komputerowej i przetwarzaniu języka naturalnego.
-
-    [RYSUNEK]
-
-    [WARSTWA SPLOTOWA, FILTRY, KERNEL, PARAMETRY]
-
-    [POOL, MAXPOOL]
-
-    [WARSTWY W PEŁNI POŁĄCZONE]
-
-    [ZASTOSOWANIE]
-
+        Wynik każdej operacji przechodzi przez funkcję aktywacji czego rezultatem jest stworzenie warstwy aktywacji o rozmiarze:
+        
+        $$ height, width = \frac{D - F + 2P}{S} + 1 $$
+        
+        \noindent gdzie $ D $ to wysokość lub szerokość obrazu zależnie od obliczanego wymiaru, $ F $ to rozmiar filtra, $ P $ oznacza wypełnienie (ang. \textit{padding}) i $ S $ to krok o ile pikseli przesuwany jest filtr. Wypełnieniem nazywamy dodanie nadmiarowych pikseli wokół krawędzi obrazu wejściowego. Jeżeli nie zastosuje się wypełnienia, czyli $ P = 0 $ to rozmiar warstwy aktywacji jest mniejszy niż rozmiar obrazu na wejściu. W celu posiadania wymiaru warstwy aktywacji takiej jak obrazu wejściowego stosuje się wypełnienie zerami (ang. \textit{zero-padding}). W celu zmniejszenia rozmiaru tejże mapy cech, w tym optymalizacji obliczeń w następnym kroku stosuje się warstwę redukującą (ang. \textit{pooling layer}). Zazwyczaj posiada ona wymiar 2x2 dla obrazów lub 1x2 dla wektorów na wejście. Filtry w tej warstwie wykonują zadanie maksymalnej redukcji (ang. \textit{max pooling}). To znaczy, przechodząc przez mapę cech, dla każdego okna 2x2 wybierana jest największa wartość piksela. Po tym, powstaje nowa zredukowana mapa zawierająca najistotniejsze cechy. Na koniec następuje spłaszczenie (ang. \textit{flattening}) końcowej mapy cech w jednowymiarowy wektor i podanie go na wejście klasycznej w pełni połączonej sieci neuronowej w celu predykcji wyniku tradycyjną metodą. Często cały proces zawiera więcej niż pojedyncze warstwy konwolucyjne i redukujące.
     
-    \subsubsection{Rekurencyjne sieci neuronowe RNN}
-    [DEFINICJA] RNN
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.8\linewidth]{cnn.png}
+            \caption{Typowa architektura sieci konwolucyjnej CNN \cite{geron2020uczenie} }
+            \label{cnn}
+        \end{figure}
+    
+        
+        \subsubsection{Rekurencyjna sieć neuronowa RNN}
+        [DEFINICJA] RNN
 
-    [STRUKTURA]
-
-    [TYPOWE PROBLEMY: ZANIKAJĄCY/ EKSPLODUJĄCY GRADIENT]
-
-    [LSTM, GRU]
-
-    [ZASTOSOWANIE]
+        [STRUKTURA]
+    
+        [TYPOWE PROBLEMY: ZANIKAJĄCY/ EKSPLODUJĄCY GRADIENT]
+    
+        [LSTM, GRU]
+    
+        [ZASTOSOWANIE]
 
 
 \section{Rozpoznanie korekcyjnych kodów blokowych}
-Korekcyjne kody blokowe
+W tym rozdziale wyjaśniono schemat modelu informacyjnego oraz sens kodowania kanałowego. Ponadto, pochylono się nad zdefiniowaniem korekcyjnych kodów blokowych i scharakteryzowaniem wywodzących się z nich kodów BCH oraz kodów Reeda-Solomona.  
 
-    \subsection{Definicja kodów blokowych}
-    Definicja
+    \subsection{Model systemu informacyjnego}
+    Modelem systemu informacyjnego można nazwać uproszczoną reprezentację struktury, zachowań i funkcji systemu informacyjnego. Pozwala to na zrozumieniu, analizie oraz projektowaniu tego rodzaju systemów.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\linewidth]{system_komunikacyjny.png}
+        \caption{ Tradycyjny model dyskretnego systemu informacyjnego }
+        \label{system-informacyjny}
+    \end{figure}
     
-    \subsection{Technika kodowania korekcyjnego}
-    Technika
+    Pierwszym elementem modelu dyskretnego systemu informacyjnego jest źródło informacji. Najczęściej informacja składa się z reprezentacji binarnej, cyfr dziesiętnych lub liter alfabetu. Przy założeniu wysyłania wiadomości w takt zegara ciąg informacji trafia do kodera źródłowego. W tym układzie dostarczone wiadomości dzielone są na ciągi danych elementarnych. Najczęstszą przeszkodą pojawiającą się w rzeczywistych systemach komunikacyjnych jest maksymalna liczba symboli elementarnych, które mogą być transmitowane przez kanał w określonym przedziale czasu. Drugim blokiem na powyższym schemacie jest koder kanałowy, którego celem stosowania jest zapewnienie niezawodności w transmisji sekwencji podanej na jego wejściu. Dodawane są do niej nadmiarowe symbole, pomocne w uniknięciu przekłamania oryginalnej sekwencji podczas transmisji w kanale. Dzięki tej operacji, zwiększone jest prawdopodobieństwo odtworzenia oryginalnego ciągu symboli elementarnych. Modulator natomiast, na podstawie symboli wynikowych z kodera źródłowego, tworzy sygnał podawany na wejście kanału transmisyjnego najczęściej analogowego. Kanał ten jest fizycznym medium (np. kable miedziane lub powietrze), które umożliwia przesył informacji w postaci sygnałów między nadawcą a odbiorcą. Żadne medium nie jest idealnym nośnikiem informacji, więc zawsze wprowadza się przekłamanie danych wywołane przez źródło szumu. Kanał może przybierać formę zarówno przestrzenną, jak i czasową. Pierwsze określenie odnosi się do przesyłu wiadomości pomiędzy nadajnikiem a odbiornikiem znajdującymi się w różnych miejscach. Natomiast, drugi termin definiuje kanał zapisujący dane na nośnikach pamięci. W stosownej chwili, zapisy są odczytywane, a następnie dostarczane odbiorcy. Zadaniem demodulatora jest przekształcenie zaszumionego sygnału na wyjściu kanału w symbole elementarne. Dekoder kanałowy próbuje zrekonstruować oryginalnie zakodowaną wiadomość, na podstawie odczytanego błędnego bloku symboli elementarnych. Za sprawą dekodera źródłowego, niezależnie od skutku tego procesu, dany blok przekształcany jest w formę, która będzie zrozumiała dla odbiorcy.
+    
+    
+    \subsection{Kodowanie kanałowe}
+    Istotą kodowania kanałowego jest detekcja lub korekcja błędów. Współczesne systemy transmisji cyfrowej, zwłaszcza za pośrednictwem kanałów radiowych, niejednokrotnie umożliwiają rozwiązanie obu tych problemów równocześnie.
+
+    Proces kodowania kanałowego opiera się o dwie kluczowe zasady. Pierwszą z nich jest wprowadzenie nadmiaru informacyjnego osiąganego za pośrednictwem rozszerzenia ciągu elementów oryginalnej wiadomości o dodatkowe symbole. Technika dobierania symboli, działa na takiej zasadzie, aby umożliwić odróżnienie danej wiadomości od innych nadanych. Ponadto, zakłada się bardzo wysokie prawdopodobieństwo, że zakłócony rozszerzony ciąg symboli podany na wejście odbiornika będzie możliwy do powiązania go z odpowiednią nadaną wiadomością.
+
+    W bezpamięciowym binarnym kanale symetrycznym, powstawanie niezależnych błędów odbywa się z prawdopodobieństwem równym $ p $. Szansa $ P $ zaistnienia $ d $ błędów w n-elementowej sekwencji symboli dla danej wiadomości przedstawiona jest poniższym wzorem:
+
+    \begin{equation}
+    \begin{aligned}
+        P = p^d ( 1 - p )^{n - d}
+    \end{aligned}
+    \label{gradient-prosty}
+    \end{equation}
+
+    \noindent Reguła maksimum wiarygodności (ang. \textit{maximum likelihood estimation} — MLE) dowodzi, iż po odebraniu danego bloku binarnego należy spośród dostępnych sekwencji symboli wybrać tę, która charakteryzuje się najmniejszą odległością Hamminga $ d_{min} $ względem odebranej. Odległość ta jest równa liczbie pozycji na jakich dwa ciągi binarne o tej samej długości różnią się od siebie. W celu określenia maksymalnej liczby błędów, które kod korekcyjny może wykryć lub poprawić poprawić stosuje się odpowiednio wzory \ref{liczba-bledow-detekcja-korekcja}.
+
+    \begin{equation}
+    \begin{aligned}
+        d_{max \_ detect} &= d_{min} - 1 \\[10pt]
+        t_{max \_ correct} &= \left \lfloor \frac{d_{min} - 1}{2} \right \rfloor
+    \end{aligned}
+    \label{liczba-bledow-detekcja-korekcja}
+    \end{equation} 
+
+    
     
     \subsection{Definicja korekcyjnych kodów blokowych}
-    Czy potrzebna będzie?
+    Kody blokowe to klasyfikacja kodów, w których dane dzielone są na bloki o stałej długości, a każdy z bloków kodowany jest niezależnie. Szczególnym praktycznym przypadkiem są liniowe kody blokowe. Omówiona definicja bazuje na ciągach kodowych, których elementy są binarne. W aspekcie dodawania, liniowe kody blokowe tworzą grupę algebraiczną. Również, ciąg składający się z samych zer zalicza się do tychże kodów.
+
+    \begin{equation}
+    \begin{aligned}
+        \textbf{a} &= [a_1, a_2, \dots, a_n] \text{ oraz } \textbf{b} = [b_1, b_2, \dots, b_n] \\[10pt]
+        \textbf{a} + \textbf{b} &= \textbf{c} = [c_1, c_2, \dots, c_n] \text{, gdzie } c_i = { a_i } \oplus { b_i }
+    \end{aligned}
+    \label{kody-blokowe-wektory}
+    \end{equation} 
+
+    \noindent Kody blokowe opierające się na ciele wielomianów określa się kodami wielomianowymi.
+
+    \begin{equation}
+    \begin{aligned}
+        \textbf{a} &= [a_0, a_1, \dots, a_{n-1}] \\[10pt]
+        a(x) &= a_0  +  a_1 x  +  \dots  +  a_{n-1} x^{n-1}
+    \end{aligned}
+    \label{liczba-bledow-detekcja-korekcja}
+    \end{equation}
+
+    \noindent Kod można scharakteryzować znając zbiór słów kodowych oraz także poprzez przedstawienie pełnej kolekcji wielomianów kodowych o stopniu nie większym niż $ (n - 1) $. Wielomiany reprezentujące ciągi wielomianowego kodu odznaczają się tym, że ich wspólnym składnikiem jest wielomian generujący dany kod $ g(x) $. Umożliwia on wygenerowanie wszystkich słów kodowych z danej grupy kodowej.
+
+    Nieodłącznym elementem tego działu jest pojęcie ciała skończonego (ang. \textit{Galois Field}) $ GF(q) $. Stanowi ono skończony zbiór $ q $ elementów. W ciele tym sformułowane są operacje dodawania i mnożenia. Suma i iloczyn dwóch elementów ciała zawierają się w tym ciele. Co więcej, w ciele tym mieści się element zerowy oraz jednostkowy, dla których zachodzą zależności:
+    
+    \begin{equation}
+    \begin{aligned}
+        \underset{a}{\bigwedge} \; a + 0 = a   \quad   \underset{a}{\bigwedge} \; a \cdot 1 = a
+    \end{aligned}
+    \label{element-zerowy-jednostkowy}
+    \end{equation}
+
+    \noindent Każdy element ciała ma element do niego przeciwstawny jak we wzore \ref{element-przeciwstawny}, a dla wszystkich niezerowych elementów ciała występuje element odwrotny jak to zaprezentowano na wzorze \ref{element-odwrotny}
+
+    \begin{equation}
+    \begin{aligned}
+        \underset{a}{\bigwedge} \; \underset{ ( - a ) }{\bigvee}  \; a + ( - a ) = a
+    \end{aligned}
+    \label{element-przeciwstawny}
+    \end{equation}
+
+    \begin{equation}
+    \begin{aligned}
+        \underset{a \neq 0}{\bigwedge} \; \underset{ a^{-1} }{\bigvee}  \; a \cdot a^{-1} = a
+    \end{aligned}
+    \label{element-odwrotny}
+    \end{equation}
+
+    \noindent Również w ciele Galois występuje przemienność i łączność działań dodawania, a także rozłączność operacji mnożenia względem dodawania. Dla elementów ciała $ a $, $ b $ i $ c $ zachodzą zależności jak poniżej:
+
+    \begin{equation}
+    \begin{aligned}
+        a + ( b + c ) = ( a + b ) + c \\[10pt]
+        a + b = b + a \\[10pt]
+        a ( b + c ) = a b + a c \\[10pt]
+        a ( b c ) = ( a b ) c \\[10pt]
+        a b = b a
+    \end{aligned}
+    \label{przemiennosc-lacznosc-rozlacznosc}
+    \end{equation}
+
+    \noindent Istnienie ciał Galois jest zależne od tego czy liczba ich elementów jest liczbą pierwszą lub potęgą liczby pierwszej. Dla pierwszej sytuacji mowa o ciele pierwotnym, a dla drugiej o ciele rozszerzonym.
+
+    
+
+    Kody cykliczne to wielomianowe kody blokowe, posiadające wyjątkową zaletę. Każde cykliczne przesunięcie (permutacja) słowa kodowego także jest słowem kodowym. Ciąg kodowy, którego znaki zostały przesunięte w lewo lub prawo, również jest prawidłowym ciągiem kodowym. Oznacza to, że jeżeli $ ( a_0, a_1, \dots, a_{n-1} ) $ jest słowem kodowym, to jest nim też $ ( a_1, a_2, \dots, a_{n-1}, a_0 ) $.
+
+    Natomiast, korekcyjne kody blokowe (ang. \textit{forward error correction block codes}) to kody blokowe posiadające dodatkową cechę. Umożliwiają wykrywanie błędów, a w niektórych przypadkach ich korekcję. Opisuje się je przez liczbę bitów kodu $ n $, długość wiadomości $ k $ oraz mnimalną odległość Hamminga $ d_{min} $. Do popularnych kodów blokowych zalicza się kody: Hamminga, Golay'a, BCH oraz Reeda-Solomona.
+
         
-    \subsubsection{Kod BCH}
-    BCH
+        \subsubsection{Kody BCH}
+        Kody Bose–Chaudhuri–Hocquenghem (BCH) należą do rodziny kodów cyklicznych. Za pomocą kodów BCH możliwa jest korekcja więcej niż jednego błędu. Kod BCH mogący poprawić $ t $ błędów z elementami sekwencji kodowej będącej częścią ciała $ GF(q) $, posiada rozmiar słów kodowych równy $ n = q^m - 1 $. Ponadto, zawiera on pierwiastki wielomianu generującego $ g(x) = \alpha^{i_0}, \alpha^{i_0 + 1}, \dots, \alpha^{i_0 + 2t - 1} $, gdzie $ i_0 $ jest określoną początkową liczbą naturalną, a $ \alpha $ elementem generującym ciało $ GF(q^m) $.
+
+        Kody BCH znajdują swoje zastosowanie w systemach telekomunikacyjnych, szczególnie w komunikacji bezprzewodowej takiej jak telefonia komórkowa oraz komunikacja satelitarna. Również, są szeroko wykorzystywane w kryptografii i systemach przechowywania danych takich jak płyty optyczne (DVD, CD, Blu-ray), dyski twarde, czy też pamięci flash.
+
     
-    \subsubsection{Kod Reeda-Solomona}
-    Reed-Solomon
+        \subsubsection{Kody Reeda-Solomona}
+        Kody Reeda-Solomona (RS) wywodzą się z kodów BCH. Należą do kodów, których elementy nie są reprezentacją binarną. Parametry dobrane są na podstawie kodów BCH i są równe $ i_0 = 1 $ oraz $ m = 1 $. Z tychże właściwości wynikają inne cechy kodów Reeda-Solomona. Sekwencje kodowe mają długości równe $ n = p - 1 $. Dla zdolności korekcyjnej $ t $ wielomian generujący prezentuje się następująco: $ g(x) = ( x - \alpha ) ( x - \alpha^2 ) \dots ( x - \alpha^{2t} ) $. Oznacza to, iż w celu poprawy $ t $ niebinarnych symboli konieczne jest wykorzystanie $ 2t $ symboli parzystości
+
+        Kody RS, tak jak kody BCH, stosuje się w systemach komunikacji bezprzewodowej. Wykorzystuje się je również w przesyle danych za pomocą Ethernet, czy systemów światłowodowych. Aplikuje się je do odczytu nawet uszkodzonych kodów kreskowych i QR. Co więcej, kodów RS używa się także w systemach nawigacyjnych GPS oraz do przesyłu i przechowywania obrazów takich jak MRI, czy CT.
         
-    \subsection{Dekodowanie korekcyjnych kodów blokowych}
-    Dekodowanie
-    
-    \subsection{Techniki uczenia maszynowego stosowane do dekodowania kodów 	korekcyjnych}
-    Czy o tym nie powiem opisując przegląd i porównanie artykułów?
-    
-    \subsection{Techniki uczenia głębokiego, do poprawy jakości dekodowania wybranych korekcyjnych kodów blokowych }
-    Chyba wspomnę w przeglądzie literatury
 
 
 \section{Przegląd literatury}
-Google Scholar
+Poniżej zaprezentowano rozwiązania problemu, który jest tematem niniejszej pracy dyplomowej na podstawie trzech różnych artykułów naukowych. Analiza literatury skoncentrowała się na znalezieniu sposobów poprawy jakości dekodowania kodów BCH za pomocą technik uczenia głębokiego.
+
+    \subsection{XYZ}
+    dsadsa
+
 
     \subsection{XYZ}
     xyz
+
+
+    \subsection{Technika odszumiania dla kodów BCH za pomocą DNN}
+    W odróżnieniu od dwóch wcześniej omówionych artykułów,
+
 
 \section{Implementacja wybranego algorytmu
 }
