@@ -90,6 +90,7 @@
     \item[] GPS
     \item[] MRI
     \item[] CT
+    \item[] BPSK - binarnie kluczowana modulacja fazy (ang. Binary Phase Shift Keying)
     \item[] DNN - 
     \item[] ANN - Sztuczna sieć neuronowa (ang. \textit{Artificial Neural Network})
     \item[] CNN - Konwolucyjna sieć neuronowa (ang. \textit{Convolutional Neural Network})
@@ -106,6 +107,7 @@
     
     \subsection{Struktura pracy}
     ? Zostawić na koniec pisania ?
+
 
 \section{Wprowadzenie do uczenia maszynowego}\setcounter{figure}{0}
 W tym rozdziale omówiono podstawowe definicje i pojęcia kryjące się za terminem uczenie maszynowe (ang. \textit{machine learning}) Przedstawiono opis zagadnienia, techniki uczenia modelu w sposób nadzorowany i nienadzorowany oraz najważniejsze informacje dotyczące przygotowania danych do treningu i testowania algorytmu.
@@ -308,16 +310,41 @@ W tym rozdziale skupiono się na zdefiniowaniu uczenia głębokiego (ang. \texti
         \end{figure}
     
         
-        \subsubsection{Rekurencyjna sieć neuronowa RNN}
-        [DEFINICJA] RNN
+        \subsubsection{Losowa sieć neuronowa RNN}
+        Jak podaje Erol Gelenbe, autor artykułu naukowego \cite{gelenbe1989random}, w losowej sieci neuronowej (ang. \textit{random neural network}) sygnały na wyjściu węzłów są dodatnie lub ujemne. Pozytywny sygnał na wejściu danego neuronu powoduje wzrost jego stanu wewnętrznego (potencjału) o 1. Negatywny sygnał zmniejsza potencjał o 1, tylko jeżeli ten potencjał jest większy od 0, lecz nie ma wpływu na neuron o potencjale równym 0. Kiedy wynikowy potencjał jest dodatni, neuron $ i $ aktywuje się (ang. \textit{fires}) w odstępach czasu o rozkładzie wykładniczym z wartością średnią $ \frac{1}{r (i)}$, gdzie $ r(i) $ jest częstością wyzwalania neuronu. Sygnały pozytywne reprezentują sygnały pobudzające, a negatywne odzwierciedlają sygnały tłumiące.
 
-        [STRUKTURA]
-    
-        [TYPOWE PROBLEMY: ZANIKAJĄCY/ EKSPLODUJĄCY GRADIENT]
-    
-        [LSTM, GRU]
-    
-        [ZASTOSOWANIE]
+        Sygnały z zewnątrz podane do warstwy wejściowej lub wychodzące od innych neuronów w sieci przybywają do kolejnych neuronów za pomocą procesu Poissona o częstości odpowiednio $ \lambda ^+ (i) $ oraz $ \lambda ^- (i) $. Sygnał wychodzący z neuronu $ i $, kiedy ten się aktywuje zmierza do neuronu $ j $ z prawdopodobieństwem $ p^{+} (i,j) $ jako sygnał pozytywny lub jako sygnał negatywny z prawdopodobieństwem $ p^{-} (i,j) $. Sygnał ten może również opuścić sieć z prawdopodobieństwem $ d(i) $. Równanie \ref{prawdopodobienstwo} ukazuje prawdopodobieństwo przejścia w łańcuchu Markowa reprezentujące przebieg sygnału z neuronu $ i $ do neuronu $ j $. Również w drugiej linii równania pokazano, że prawdopodobieństwo, iż neuron $ i $ wyśle sygnał do samego siebie jest zerowe. 
+
+        \begin{equation}
+        \begin{aligned}
+            p(i, j) &= p^{+} (i,j) + p^{-} (i,j) \\[10pt]
+            p(i ,i) &= 0 \text{, dla każdego } i
+        \end{aligned}
+        \label{prawdopodobienstwo}
+        \end{equation}
+
+        \noindent Co więcej, suma prawdopodobieństw, że sygnał z neuronu $ i $ przejdzie do wszystkich możliwych nauronów $ j $ oraz że sygnał nie trafi do żadnego z $ j $ neuronów i opuści sieć wynosi 1, jak pokazano we wzorze \ref{p-d-rnn}.
+
+        \begin{equation}
+        \begin{aligned}
+            \sum_j p(i, j) + d(i) = 1
+        \end{aligned}
+        \label{p-d-rnn}
+        \end{equation}
+
+        \noindent Wyniki predykcji losowej sieci neuronowej można interpretować znając prawdopodobieństwo aktywacji każdego neuronu z warstwy wyjściowej za pomocą wzoru \ref{p-aktywacji-rnn}.
+
+        \begin{equation}
+        \begin{aligned}
+            q_i &= \frac{ \lambda ^+ (i) }{ r (i) + \lambda ^- (i) }, \; q_i \in [0, 1]
+        \end{aligned}
+        \label{p-aktywacji-rnn}
+        \end{equation}
+        
+        \noindent Na przykład, przy ustaleniu progu na 0.5 jeżeli $ q_i \geq 0.5 $ to na wyjściu neuronu $ y_i $ otrzyma się binarne "1", czyli neuron został aktywowany. Jeżeli $ q_i < 0.5 $ to neuron jest nieaktywny i na wyjściu otrzyma się binarne "0".
+
+        % Do warstwy wejściowej sieci podawane są sygnały pozytywne $ $ i negatywne $ $ określające na przykład cyfry binarne. Na wyjściu neurony aktywowane są w zależności od zadanego progu. Dzięki temu powyżej danego progu można otrzymać binarne "1", a poniżej binarne "0".
+
 
 
 \section{Rozpoznanie korekcyjnych kodów blokowych}
@@ -339,27 +366,52 @@ W tym rozdziale wyjaśniono schemat modelu informacyjnego oraz sens kodowania ka
     \subsection{Kodowanie kanałowe}
     Istotą kodowania kanałowego jest detekcja lub korekcja błędów. Współczesne systemy transmisji cyfrowej, zwłaszcza za pośrednictwem kanałów radiowych, niejednokrotnie umożliwiają rozwiązanie obu tych problemów równocześnie.
 
-    Proces kodowania kanałowego opiera się o dwie kluczowe zasady. Pierwszą z nich jest wprowadzenie nadmiaru informacyjnego osiąganego za pośrednictwem rozszerzenia ciągu elementów oryginalnej wiadomości o dodatkowe symbole. Technika dobierania symboli, działa na takiej zasadzie, aby umożliwić odróżnienie danej wiadomości od innych nadanych. Ponadto, zakłada się bardzo wysokie prawdopodobieństwo, że zakłócony rozszerzony ciąg symboli podany na wejście odbiornika będzie możliwy do powiązania go z odpowiednią nadaną wiadomością.
+        \subsubsection{Proces kodowania kanałowego}
+        Proces kodowania kanałowego opiera się na dwóch kluczowych zasadach. Pierwszą z nich jest wprowadzenie nadmiaru informacyjnego osiąganego za pośrednictwem rozszerzenia ciągu elementów oryginalnej wiadomości o dodatkowe symbole. Technika dobierania symboli, działa na takiej zasadzie, aby umożliwić odróżnienie danej wiadomości od innych nadanych. Ponadto, zakłada się bardzo wysokie prawdopodobieństwo, że zakłócony rozszerzony ciąg symboli podany na wejście odbiornika będzie możliwy do powiązania go z odpowiednią nadaną wiadomością.
+    
+        W bezpamięciowym binarnym kanale symetrycznym, powstawanie niezależnych błędów odbywa się z prawdopodobieństwem równym $ p $. Szansa $ P $ zaistnienia $ d $ błędów w n-elementowej sekwencji symboli dla danej wiadomości przedstawiona jest poniższym wzorem:
+    
+        \begin{equation}
+        \begin{aligned}
+            P = p^d ( 1 - p )^{n - d}
+        \end{aligned}
+        \label{pstwo}
+        \end{equation}
+    
+        \noindent Reguła maksimum wiarygodności (ang. \textit{maximum likelihood estimation} — MLE) dowodzi, iż po odebraniu danego bloku binarnego należy spośród dostępnych sekwencji symboli wybrać tę, która charakteryzuje się najmniejszą odległością Hamminga $ d_{min} $ względem odebranej. Odległość ta jest równa liczbie pozycji na jakich dwa ciągi binarne o tej samej długości różnią się od siebie. W celu określenia maksymalnej liczby błędów, które kod korekcyjny może wykryć lub poprawić poprawić stosuje się odpowiednio wzory \ref{liczba-bledow-detekcja-korekcja}.
+    
+        \begin{equation}
+        \begin{aligned}
+            d_{max \_ detect} &= d_{min} - 1 \\[10pt]
+            t_{max \_ correct} &= \left \lfloor \frac{d_{min} - 1}{2} \right \rfloor
+        \end{aligned}
+        \label{liczba-bledow-detekcja-korekcja}
+        \end{equation} 
+    
+        \noindent Natomiast waga Hamminga $ w $ to liczba elementów o wartości $ 1 $ w słowie binarnym jak we wzorze\ref{waga-hamminga}. Na przykład dla 4-bitowego słowa $ 1011 $ waga $ w = 1+0+1+1 = 3 $.
+    
+        \begin{equation}
+        \begin{aligned}
+            w(x) = \sum_{i=1}^{n} x_i
+        \end{aligned}
+        \label{waga-hamminga}
+        \end{equation} 
+    
+        \subsubsection{Dekodowanie twardo- i miękkodecyzyjne}
+        Dekodowanie twardo- i miękkodecyzyjne opiera się na interpretacji odbieranych danych np. słowa binarnego w celu zrekonstruowania wiadomości oryginalnej, która została zakłócona w kanale transmisyjnym.
 
-    W bezpamięciowym binarnym kanale symetrycznym, powstawanie niezależnych błędów odbywa się z prawdopodobieństwem równym $ p $. Szansa $ P $ zaistnienia $ d $ błędów w n-elementowej sekwencji symboli dla danej wiadomości przedstawiona jest poniższym wzorem:
+        Dekodowanie twardodecyzyjne (ang. \textit{hard decision decoding}) bazuje na dwupoziomowym układzie decyzyjnym. Dekodowanie to jest procesem odtwarzania oryginalnego sygnału cyfrowego z sygnału zakłóconego, w którym każda otrzymana wartość jest jednoznacznie przypisywana do jednego z możliwych symboli. To znaczy, że to jaką decyzję o wartości symbolu podejmie dekoder zależy od poziomu otrzymanego sygnału. Na przykład, w kodach binarnych jeżeli bitowi "0" będzie odpowiadał sygnał $ 1.0 V $, a bitowi "1" będzie odpowiadał sygnał $ -1.0 V $ należy ustalić próg decyzji o wartości symbolu. W tym przypadku:
+        
+        \begin{equation}
+        \begin{aligned}
+            \frac{1.0 V + (-1.0) V}{2} = 0.0 V
+        \end{aligned}
+        \label{dekodowanie-twardo}
+        \end{equation}
 
-    \begin{equation}
-    \begin{aligned}
-        P = p^d ( 1 - p )^{n - d}
-    \end{aligned}
-    \label{gradient-prosty}
-    \end{equation}
+        \noindent Posiadając tę wiedzę, jeżeli otrzyma się sygnały  $  -0.8V, 1.4V, -0.1V  $, to sygnały $ < 0.0V$ interpretujemy jako $ -1.0V $, czyli symbol "1". W odwrotnym przypadku otrzyma się symbol "0". Tym sposobem, wyniki dekodowania twardodecyzyjnego na podstawie przykładowej listy sygnałów są następujące: $ 1, 0, 1 $. Z rekonstrukcji bit po bicie słowa kodowego powstaje propozycja odtworzonej wiadomości. Na podstawie minimalnej odległości Hamminga następuje decyzja, jaka wiadomość została pierwotnie nadana. Dekodowanie twardodecyzyjne pozwala na poprawę $ \frac{d_{min} -1}{2} $ błędów. Technika ta jest prosta, lecz obliczeniowo nieefektywna.
 
-    \noindent Reguła maksimum wiarygodności (ang. \textit{maximum likelihood estimation} — MLE) dowodzi, iż po odebraniu danego bloku binarnego należy spośród dostępnych sekwencji symboli wybrać tę, która charakteryzuje się najmniejszą odległością Hamminga $ d_{min} $ względem odebranej. Odległość ta jest równa liczbie pozycji na jakich dwa ciągi binarne o tej samej długości różnią się od siebie. W celu określenia maksymalnej liczby błędów, które kod korekcyjny może wykryć lub poprawić poprawić stosuje się odpowiednio wzory \ref{liczba-bledow-detekcja-korekcja}.
-
-    \begin{equation}
-    \begin{aligned}
-        d_{max \_ detect} &= d_{min} - 1 \\[10pt]
-        t_{max \_ correct} &= \left \lfloor \frac{d_{min} - 1}{2} \right \rfloor
-    \end{aligned}
-    \label{liczba-bledow-detekcja-korekcja}
-    \end{equation} 
-
+        Dekodowanie miękkodecyzyjne (ang. \textit{soft decision decoding}) bazuje na zastosowaniu wielopoziomowego kwantyzatora. Ta zaawansowana technika odtwrzania sygnału cyfrowego bierze pod uwagę dodatkowe informacje o niepewności dotyczącej każdego odebranego symbolu. Istotą procesu tego dekodowania ciągów kodowych jest znalezienie maksymalnej korelacji pomiędzy odebranym zniekształconym sygnałem, a pierwotnie generowanymi sekwencjami kodowymi. Skutkuje to efektywniejszym zrekonstruowaniem pierwotnej wiadomości, której towarzyszą zakłócenia.
     
     
     \subsection{Definicja korekcyjnych kodów blokowych}
@@ -380,60 +432,72 @@ W tym rozdziale wyjaśniono schemat modelu informacyjnego oraz sens kodowania ka
         \textbf{a} &= [a_0, a_1, \dots, a_{n-1}] \\[10pt]
         a(x) &= a_0  +  a_1 x  +  \dots  +  a_{n-1} x^{n-1}
     \end{aligned}
-    \label{liczba-bledow-detekcja-korekcja}
+    \label{wielomian}
     \end{equation}
-
-    \noindent Kod można scharakteryzować znając zbiór słów kodowych oraz także poprzez przedstawienie pełnej kolekcji wielomianów kodowych o stopniu nie większym niż $ (n - 1) $. Wielomiany reprezentujące ciągi wielomianowego kodu odznaczają się tym, że ich wspólnym składnikiem jest wielomian generujący dany kod $ g(x) $. Umożliwia on wygenerowanie wszystkich słów kodowych z danej grupy kodowej.
-
-    Nieodłącznym elementem tego działu jest pojęcie ciała skończonego (ang. \textit{Galois Field}) $ GF(q) $. Stanowi ono skończony zbiór $ q $ elementów. W ciele tym sformułowane są operacje dodawania i mnożenia. Suma i iloczyn dwóch elementów ciała zawierają się w tym ciele. Co więcej, w ciele tym mieści się element zerowy oraz jednostkowy, dla których zachodzą zależności:
-    
-    \begin{equation}
-    \begin{aligned}
-        \underset{a}{\bigwedge} \; a + 0 = a   \quad   \underset{a}{\bigwedge} \; a \cdot 1 = a
-    \end{aligned}
-    \label{element-zerowy-jednostkowy}
-    \end{equation}
-
-    \noindent Każdy element ciała ma element do niego przeciwstawny jak we wzore \ref{element-przeciwstawny}, a dla wszystkich niezerowych elementów ciała występuje element odwrotny jak to zaprezentowano na wzorze \ref{element-odwrotny}
-
-    \begin{equation}
-    \begin{aligned}
-        \underset{a}{\bigwedge} \; \underset{ ( - a ) }{\bigvee}  \; a + ( - a ) = a
-    \end{aligned}
-    \label{element-przeciwstawny}
-    \end{equation}
-
-    \begin{equation}
-    \begin{aligned}
-        \underset{a \neq 0}{\bigwedge} \; \underset{ a^{-1} }{\bigvee}  \; a \cdot a^{-1} = a
-    \end{aligned}
-    \label{element-odwrotny}
-    \end{equation}
-
-    \noindent Również w ciele Galois występuje przemienność i łączność działań dodawania, a także rozłączność operacji mnożenia względem dodawania. Dla elementów ciała $ a $, $ b $ i $ c $ zachodzą zależności jak poniżej:
-
-    \begin{equation}
-    \begin{aligned}
-        a + ( b + c ) = ( a + b ) + c \\[10pt]
-        a + b = b + a \\[10pt]
-        a ( b + c ) = a b + a c \\[10pt]
-        a ( b c ) = ( a b ) c \\[10pt]
-        a b = b a
-    \end{aligned}
-    \label{przemiennosc-lacznosc-rozlacznosc}
-    \end{equation}
-
-    \noindent Istnienie ciał Galois jest zależne od tego czy liczba ich elementów jest liczbą pierwszą lub potęgą liczby pierwszej. Dla pierwszej sytuacji mowa o ciele pierwotnym, a dla drugiej o ciele rozszerzonym.
 
     
+    Korekcyjne kody blokowe (ang. \textit{forward error correction block codes}) to kody blokowe posiadające dodatkową cechę. Umożliwiają wykrywanie błędów, a w niektórych przypadkach ich korekcję. Opisuje się je przez liczbę bitów kodu $ n $, długość wiadomości $ k $ oraz mnimalną odległość Hamminga $ d_{min} $. Do popularnych kodów blokowych zalicza się kody: Hamminga, Golay'a, BCH oraz Reeda-Solomona.
+    
 
-    Kody cykliczne to wielomianowe kody blokowe, posiadające wyjątkową zaletę. Każde cykliczne przesunięcie (permutacja) słowa kodowego także jest słowem kodowym. Ciąg kodowy, którego znaki zostały przesunięte w lewo lub prawo, również jest prawidłowym ciągiem kodowym. Oznacza to, że jeżeli $ ( a_0, a_1, \dots, a_{n-1} ) $ jest słowem kodowym, to jest nim też $ ( a_1, a_2, \dots, a_{n-1}, a_0 ) $.
+        \subsubsection{Macierz kontroli parzystości}
+        [MACIERZ KONTROLI PATRZYSTOŚCI]
 
-    Natomiast, korekcyjne kody blokowe (ang. \textit{forward error correction block codes}) to kody blokowe posiadające dodatkową cechę. Umożliwiają wykrywanie błędów, a w niektórych przypadkach ich korekcję. Opisuje się je przez liczbę bitów kodu $ n $, długość wiadomości $ k $ oraz mnimalną odległość Hamminga $ d_{min} $. Do popularnych kodów blokowych zalicza się kody: Hamminga, Golay'a, BCH oraz Reeda-Solomona.
+        
+        \subsubsection{Macierz generująca}
+        Kod można scharakteryzować znając zbiór słów kodowych oraz także poprzez przedstawienie pełnej kolekcji wielomianów kodowych o stopniu nie większym niż $ (n - 1) $. Wielomiany reprezentujące ciągi wielomianowego kodu odznaczają się tym, że ich wspólnym składnikiem jest wielomian generujący dany kod $ g(x) $. Umożliwia on wygenerowanie wszystkich słów kodowych z danej grupy kodowej.
+
+        [MACIERZ GENERUJĄCA]
+
+
+        \subsubsection{Ciało Galois}
+        Nieodłącznym elementem tego działu jest pojęcie ciała skończonego (ang. \textit{Galois Field}) $ GF(q) $. Stanowi ono skończony zbiór $ q $ elementów. W ciele tym sformułowane są operacje dodawania i mnożenia. Suma i iloczyn dwóch elementów ciała zawierają się w tym ciele. Co więcej, w ciele tym mieści się element zerowy oraz jednostkowy, dla których zachodzą zależności:
+        
+        \begin{equation}
+        \begin{aligned}
+            \underset{a}{\bigwedge} \; a + 0 = a   \quad   \underset{a}{\bigwedge} \; a \cdot 1 = a
+        \end{aligned}
+        \label{element-zerowy-jednostkowy}
+        \end{equation}
+    
+        \noindent Każdy element ciała ma element do niego przeciwstawny jak we wzore \ref{element-przeciwstawny}, a dla wszystkich niezerowych elementów ciała występuje element odwrotny jak to zaprezentowano na wzorze \ref{element-odwrotny}
+    
+        \begin{equation}
+        \begin{aligned}
+            \underset{a}{\bigwedge} \; \underset{ ( - a ) }{\bigvee}  \; a + ( - a ) = a
+        \end{aligned}
+        \label{element-przeciwstawny}
+        \end{equation}
+    
+        \begin{equation}
+        \begin{aligned}
+            \underset{a \neq 0}{\bigwedge} \; \underset{ a^{-1} }{\bigvee}  \; a \cdot a^{-1} = a
+        \end{aligned}
+        \label{element-odwrotny}
+        \end{equation}
+    
+        \noindent Również w ciele Galois występuje przemienność i łączność działań dodawania, a także rozłączność operacji mnożenia względem dodawania. Dla elementów ciała $ a $, $ b $ i $ c $ zachodzą zależności jak poniżej:
+    
+        \begin{equation}
+        \begin{aligned}
+            a + ( b + c ) = ( a + b ) + c \\[10pt]
+            a + b = b + a \\[10pt]
+            a ( b + c ) = a b + a c \\[10pt]
+            a ( b c ) = ( a b ) c \\[10pt]
+            a b = b a
+        \end{aligned}
+        \label{przemiennosc-lacznosc-rozlacznosc}
+        \end{equation}
+    
+        \noindent Istnienie ciał Galois jest zależne od tego czy liczba ich elementów jest liczbą pierwszą lub potęgą liczby pierwszej. Dla pierwszej sytuacji mowa o ciele pierwotnym, a dla drugiej o ciele rozszerzonym.
+
+        \subsubsection{Kody Hamminga}
+    
+        \subsubsection{Kody cykliczne}
+        Kody cykliczne to wielomianowe kody blokowe, posiadające wyjątkową zaletę. Każde cykliczne przesunięcie (permutacja) słowa kodowego także jest słowem kodowym. Ciąg kodowy, którego znaki zostały przesunięte w lewo lub prawo, również jest prawidłowym ciągiem kodowym. Oznacza to, że jeżeli $ ( a_0, a_1, \dots, a_{n-1} ) $ jest słowem kodowym, to jest nim też $ ( a_1, a_2, \dots, a_{n-1}, a_0 ) $.
 
         
         \subsubsection{Kody BCH}
-        Kody Bose–Chaudhuri–Hocquenghem (BCH) należą do rodziny kodów cyklicznych. Za pomocą kodów BCH możliwa jest korekcja więcej niż jednego błędu. Kod BCH mogący poprawić $ t $ błędów z elementami sekwencji kodowej będącej częścią ciała $ GF(q) $, posiada rozmiar słów kodowych równy $ n = q^m - 1 $. Ponadto, zawiera on pierwiastki wielomianu generującego $ g(x) = \alpha^{i_0}, \alpha^{i_0 + 1}, \dots, \alpha^{i_0 + 2t - 1} $, gdzie $ i_0 $ jest określoną początkową liczbą naturalną, a $ \alpha $ elementem generującym ciało $ GF(q^m) $.
+        Kody Bose–Chaudhuri–Hocquenghem (BCH) należą do rodziny kodów cyklicznych. Za pomocą kodów BCH możliwa jest korekcja więcej niż jednego błędu. Kod BCH mogący poprawić $ t $ błędów z elementami sekwencji kodowej będącej częścią ciała $ GF(q) $, posiada rozmiar słów kodowych równy $ n = q^m - 1 $. Ponadto, zawiera on pierwiastki wielomianu generującego $ g(x) = \alpha^{i_0}, \alpha^{i_0 + 1}, \dots, \alpha^{i_0 + 2t - 1} $, gdzie $ i_0 $ jest określoną początkową liczbą naturalną, a $ \alpha $ elementem generującym ciało $ GF(q^m) $. Należy pamiętać, że w praktyce kody BCH przedstawia się jako BCH($n$, $k$), gdzie $n$ oznacza długość zakodowanej wiadomości bitowej, a $k$ oznacza liczbę bitów oryginalnej wiadomości. 
 
         Kody BCH znajdują swoje zastosowanie w systemach telekomunikacyjnych, szczególnie w komunikacji bezprzewodowej takiej jak telefonia komórkowa oraz komunikacja satelitarna. Również, są szeroko wykorzystywane w kryptografii i systemach przechowywania danych takich jak płyty optyczne (DVD, CD, Blu-ray), dyski twarde, czy też pamięci flash.
 
@@ -446,26 +510,233 @@ W tym rozdziale wyjaśniono schemat modelu informacyjnego oraz sens kodowania ka
 
 
 \section{Przegląd literatury}
-Poniżej zaprezentowano rozwiązania problemu, który jest tematem niniejszej pracy dyplomowej na podstawie trzech różnych artykułów naukowych. Analiza literatury skoncentrowała się na znalezieniu sposobów poprawy jakości dekodowania kodów BCH za pomocą technik uczenia głębokiego.
-
-    \subsection{XYZ}
-    dsadsa
+W tym rozdziale zaprezentowano rozwiązania problemu będącego tematem niniejszej pracy dyplomowej na podstawie trzech różnych artykułów naukowych. Analiza literatury skoncentrowała się na znalezieniu sposobów poprawy jakości dekodowania kodów Hamminga i kodów BCH za pomocą technik uczenia maszynowego.
 
 
-    \subsection{XYZ}
-    xyz
+    % \subsection{Wstęp teoretyczny}
+    % [2-3 zdania]
+
+        % \subsubsection{Graf Tannera}
+        % Grafem nazywa się strukturę matematyczną służącą do prezentacji oraz analizy relacji między obiektami. Określany jako $ G = (V, E) $ składa się z niepustego zbioru $ V = {v_1, v_2, \dots, v_n}$, którego komponenty nazywane są węzłami (ang. \textit{vertices}). Graf składa się również z par węzłów nazywanymi krawędziami (ang. \textit{edges}), które zawarte są w zbiorze $ E = { ( v_i, v_j ) } $.
+    
+        % \begin{figure}[H]
+        %     \centering
+        %     \includegraphics[width=0.7\linewidth]{graf.png}
+        %     \caption{ Przykład grafu }
+        %     \label{graf}
+        % \end{figure}
+    
+        % \noindent Dla przykładowego grafu z Rys. \ref{graf} zbiór węzłów wynosi $ V = \{ v_1, v_2, v_3, v_4 \} $, a zbiór krawędzi wynosi $ E = \{ (v_1, v_2), (v_1, v_3), (v_2, v_1), (v_2, v_2), (v_2, v_3), (v_3, v_4) \} $. Stopniem węzła (ang. \textit{degree of a vertex}) $ d $ nazywa się liczbę krawędzi połączonych z danym węzłem. W powyższym przykładzie: $ d(v_1) = 3, d(v_2) = 5, d(v_3) = 3, d(v_1) = 1 $. Natomiast, dystansem $ d(v_i, v_j) $ określa się najmniejszą liczbę krawędzi łączących ze sobą węzły $ v_i $ oraz $ v_j $.
+    
+        % Ważnym wariantem grafu jest struktura, w której zbiór węzłów można podzielić na dwa rozłączne podzbiory $ V_1 $ i $ V_2 $ charakteryzujące się tym, że węzły należące do tej samej grupy nie są ze sobą połączone, za to połączone są z węzłami drugiej grupy. Taki graf określa się mianem grafu dwudzielnego (ang. \textit{bipartite graph}) i zaprezentowano na Rys, \ref{graf-dwudzielny}.
+
+        % \begin{figure}[H]
+        %     \centering
+        %     \includegraphics[width=0.5\linewidth]{graf_dwudzielny.png}
+        %     \caption{ Przykład grafu dwudzielnego }
+        %     \label{graf-dwudzielny}
+        % \end{figure}
+        
+        % Graf Tannera stanowi reprezentację macierzy kontroli parzystości, opisującej dany kod korekcyjny. Jest on grafem dwudzielnym, tzn. posiada dwie klasy węzłów, a każda łączy element z pierwszej klasy do drugiej. Grupa pierwsza $ V_1 $ zawiera tak zwane węzły zmienne (ang. \textit{variable nodes}), których jest $ n $, każdy odpowiadający pojedynczemu bitowi słowa kodowego, a zatem również każdą kolumną macierzy kontroli parzystości $ H $. Natomiast druga klasa $ V_2 $ zawiera węzły kontrolne (ang. \textit{check nodes}), których jest $ m $. Każdy z nich odpowiada wierszowi macierzy $ H $ sprawdzającemu parzystość zestawu bitów. Węzeł kontrolny $ c_j $ jest połączony z węzłem zmiennym $ v_j $, odzwierciedlającym bit słowa binarnego, jeżeli $ H_{i,j} = 1 $, tzn. jeżeli macierz $ H $ posiada $ 1 $ w wierszu $ j $ i kolumnie $ i $.
+
+        % \begin{equation}
+        % \begin{aligned}
+        % H_{3,7} = 
+        %     \begin{bmatrix}
+        %     1 & 1 & 1 & 0 & 1 & 0 & 0 \\
+        %     0 & 1 & 0 & 1 & 0 & 1 & 1 \\
+        %     1 & 0 & 1 & 1 & 0 & 0 & 1
+        %     \end{bmatrix}
+        % \end{aligned}
+        % \label{macierz-H}
+        % \end{equation}
+
+        % \noindent Przykład na podstawie macierzy $ H_{3,7} $ ze wzoru \ref{macierz-H} przedstawiono na Rys. \ref{graf-tannera-przyklad}, gdzie $ v_1, v_2, \dots, v_7 $ są węzłami zmiennymi, a $ c_1, c_2, c_3 $ są węzłami kontrolnymi, sprawdzającymi parzystość ciągu kodowego z odpowiednio $ 1 $, $ 2 $ i $ 3 $ wiersza macierzy, za pomocą operacji sumy modulo 2 elementów tego ciągu.
+
+        % \begin{figure}[H]
+        %     \centering
+        %     \includegraphics[width=0.75\linewidth]{graf_tannera_przyklad.png}
+        %     \caption{ Graf Tannera na podstawie macierzy $ H_{3,7} $ \ref{macierz-H} }
+        %     \label{graf-tannera-przyklad}
+        % \end{figure}
+        
+        
+        % \subsubsection{Algorytm belief propagation}
+        % Algorytm \textit{belief propagation} jest szeroko stosowany w uczeniu maszynowym oraz teorii informacji. Założeniem BP realizowanym w oparciu o graf Tannera jest przekazywanie wiadomości pomiędzy węzłami zmiennymi i węzłami konrolnymi w celu iteracyjnego wyznaczenia wartości bitów kodu, które minimalizują liczbę błędów. 
 
 
-    \subsection{Technika odszumiania dla kodów BCH za pomocą DNN}
-    W odróżnieniu od dwóch wcześniej omówionych artykułów,
+    % \subsection{Dekodowanie liniowych kodów blokowych z użyciem DNN}
+    % W artykule \cite{nachmani2016dnndecoding} autorzy prezentują ulepszenie algorytmu \textit{belief propagation} BP poprzez [?przypisanie wag do krawędzi grafu Tannera. Krawędzie są następnie trenowane stosując tehchniki uczenia głębokiego?] Ogromną zaletą korzystania z algorytmu BP jest niezależność wydajności od transmitowanego słowa kodowego (ang. \textit{codeword}). Wyniki badań demonstrowane są z użyciem kodów BCH($ 63 $, $ 36 $), BCH($ 63 $, $ 45 $) i BCH($ 127 $, $ 106 $).
 
 
-\section{Implementacja wybranego algorytmu
-}
-Zdecydowałem się na artykuł z odszumianiem
+    % \subsection{Dekodowanie liniowych kodów blokowych z użyciem sieci RNN}
+    % W artykule naukowym \cite{nachmani2017rnndecodinglinearblock} przedstawiono poprawioną wydajność w porównaniu z \textit{belief propagation} BP ulepszony o RNN od \cite{nachmani2016dnndecoding}
+
+    
+    \subsection{Technika dekodowania kodów Hamminga}
+    W artykule \cite{abdelbaki1999random} autor proponuje model dekodera bazującego na losowej sieci neuronowej. Dekoder jest testowany za pomocą liniowych kodów Hamminga. Następnie wyniki są porównane z konwencjonalnym dekoderem twardodecyzyjnym oraz optymalnym dekoderem miękkodecyzyjnym.
+
+    Dekoder RNN (RNND), zaprezentowany w artykule, zaprojektowany jest do dekodowania kodu Hamminga ($ 7 $, $ 4 $). Sieć zawiera dwie warstwy. Pierwszą jest warstwa wejściowa posiadająca 7 neuronów, które są ze sobą w pełni połączone. Natomiast drugą stanowi warstwa wyjściowa, która posiada 14 neuronów.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.75\linewidth]{rnnd.png}
+        \caption{ Struktura dekodera RNN \cite{abdelbaki1999random} }
+        \label{rnnd}
+    \end{figure}
+    
+    \noindent Węzły w sieci połączone są ze sobą jak na rysunku \ref{rnnd}. Neurony z warstwy wejściowej kolejno reprezentują elementy wiadomości zawierającej błędy. Każdy z neuronów wyjściowych reprezentuje 14 możliwych widomości kodowych Hamming ($7$, $4$), nie wliczając ciągu zerowego i jedynkowego. Podczas ogólnego treningu losowej sieci opartego o rozwiązanie \cite{gelenbe1993learning}, znajdowane są relacje między elementami na wejściu co odzwierciedla się w zapisaniu zaktualizowanych wag do dedykowanej macierzy. Warstwa wyjściowa pełni rolę warstwy klasyfikacyjnej, w której indeks neuronu wyjściowego wykazujący się najmniejszą wartością stanu neuronu wskazuje indeks zdekodowanej wiadomości bitowej ze zbioru czternastu pierwotnych ciągów. Warto wspomnieć, iż słów binarnych $ 0000000 $ i $ 1111111 $ nie zawarto w zbiorze treningowym i testowym z racji na osiągnięcie lepszych rezultatów dekodowania, niż gdy były zawarte. Aczkolwiek, jak podano w artykule, stosując identyczną strukturę sieci, ale posiadającą tylko 2 neurony klasyfikujące w warstwie wyjściowej trening przebiegł z zadowalającym skutkiem, przy dekodowaniu błędnie transmitowanych słów bitowych zerowych i jedynkowych.
+
+    W procesie treningu sieci, wykorzystano każde możliwe wiadomości binarne kodu Hamminga ($7$,$4$), z wyjątkiem ciągu zerowego i jedynkowego. Każdy wektor reprezentujący dane słowo kodowe poddany został modulacji BPSK — bit "$0$" reprezentowany jako "$1$", a bit "$1$" reprezentowany jako "$-1$". Badania przeprowadzono z użyciem symulatora RNNMSIM v1.0 package.
+
+    Po treningu sieci nastąpiła symulacja algorytmu. Utworzono trzy grupy testowe zaszumionych losowo wybranych słów kodowych testujących sieć. 7-bitowe słowa kodowe poddano modulacji BPSK, a następnie zostały zaszumione za pomocą białego addytywnego szumu gaussowskiego AWGN. Stosunek sygnału do szumu SNR wynosił najmniej $-1$ dB, a najwięcej $2$ dB. W tabeli \ref{3-groups} przedstawiono ilość błędnych pozycji (bitów) na słowo kodowe. Każdy ze zbiorów posiadał $ 10 $ tys. próbek. 
+
+    \begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+    \hline
+    \textbf{Nr grupy} & \textbf{Błędne pozycje na słowo kodowe}\\
+    \hline
+    1  & 1 \\
+    2  & 2 \\
+    3  & 3 \\
+    \hline
+    \end{tabular}
+    \caption{Ilość błędnych pozycji na słowo kodowe dla każdej z trzech grup testowych}
+    \label{3-groups}
+    \end{table}
+
+    \noindent Następnie dekodery HDD, RNND oraz SDD poddano testom. Wyniki dla każdego zbioru testowego, zaprezentowano w następujących tabelach:
+
+    \begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+    \hline
+    \textbf{SNR (dB)} & \textbf{HDD} & \textbf{RNND} & \textbf{SDD} \\
+    \hline
+    -1  & 0    & 0.071 & 0.057 \\
+    0   & 0    & 0.043 & 0.036 \\
+    1   & 0    & 0.027 & 0.022 \\
+    2   & 0    & 0.006 & 0.004 \\
+    \hline
+    \end{tabular}
+    \caption{Prawdopodobieństwo błędnie zdekodowanego ciągu dla pierwszej grupy}
+    \end{table}
+    
+    \begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+    \hline
+    \textbf{SNR (dB)} & \textbf{HDD} & \textbf{RNND} & \textbf{SDD} \\
+    \hline
+    -1  & 1    & 0.409 & 0.363 \\
+    0   & 1    & 0.314 & 0.297 \\
+    1   & 1    & 0.253 & 0.201 \\
+    2   & 1    & 0.217 & 0.190 \\
+    \hline
+    \end{tabular}
+    \caption{Prawdopodobieństwo błędnie zdekodowanego ciągu dla drugiej grupy}
+    \end{table}
+    
+    \begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+    \hline
+    \textbf{SNR (dB)} & \textbf{HDD} & \textbf{RNND} & \textbf{SDD} \\
+    \hline
+    -1  & 1    & 0.774 & 0.772 \\
+    0   & 1    & 0.686 & 0.648 \\
+    \hline
+    \end{tabular}
+    \caption{Prawdopodobieństwo błędnie zdekodowanego ciągu dla trzeciej grupy}
+    \end{table}
+
+    Rezultaty symulacji świadczą o tym, iż dla większej niż 1 ilości błędów na słowo binarne dekoder miękkodecyzyjny SDD sprawdza się najlepiej, dla każdego z poziomów zaszumienia SNR. Jednak, dekoder RNND nieznacznie od niego odstaje, podczas gdy dekoder HDD predykcjonuje poprawne wyniki z prawdopodobieństwem równym 0. Natomiast, dla ilości błędów na słowo kodowe równej 1, niezastąpiony jest klasyczny dekoder twardodecyzyjny, który dla każdego poziomu zaszumienia SNR ze stu procentową pewnością prawidłowo dekoduje błędne wiadomości. Wtem, na drugim miejscu plasuje się dekoder miękkodecyzyjny. Podsumowując, jeżeli nie jest się w stanie określić ile błędnych pozycji na słowo bitowe wprowadza zaszumiony kanał transmisyjny lub wiadomo, że liczba błędnych pozycji na słowo przekracza 1, najrozsądniejszym wyborem jest zastosowanie dekoder SDD.
+    Największą wadą zaproponowanej losowej sieci neuronowej okazuje się być eksponencjalnie rosnąca liczba neuronów wyjściowych wraz ze zwiększającą się liczbą wiadomości kodowych, co jest niepraktyczne korzystając z kodów Hamminga dłuższych niż ($7$,$4$).
+
+    
+    \subsection{Technika odszumiania dla kodów BCH}
+    W odróżnieniu od wcześniej opisanego artykułu, w pracy \cite{zhu2020novel} zaproponowano trzy różne warianty innowacyjnych odszumiaczy (ang. \textit{denoisers}) dla kodów BCH, w szczególności dla wersji (15,7) omówionej w artykule. Autorzy opisali sposób zaprojektowania następujących głębokich sieci neuronowych: wielowarstwowy perceptron, splotowa oraz rekurencyjna sieć neuronowa. Rozwiązania te stosowane są do wspomagania klasycznych algorytmów dekodowania kodów BCH. Wpierw błędne zakodowane wiadomości 15-bitowe są odszumiane przez sieć neuronową — zminimalizowanie liczby błędnych pozycji bitowych. Następnie, wynikowy ciąg trafia do tradycyjnego dekodera BCH, czego rezultatem jest 7-bitowe słowo, będące predykcją oryginalnej wiadomości. W niniejszej pracy dyplomowej pominięto omawianie rozwiązania bazującego na rekurencyjnej sieci neuronowej (ang. \textit{recurrent neural network} — RNN).
+
+    Na rysunku \ref{denoiser-system-model} przedstawiono zaproponowany przez autorów model systemu dekodującego kody BCH oparty o odszumienie błędnej zakodowanej wiadomości za pomocą algorytmów głębokich sieci neuronowych.
+
+   \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.85\linewidth]{denoiser_system_model.png}
+        \caption{ Model systemu inteligentnego odszumiacza dla kodów BCH \cite{zhu2020novel} }
+        \label{denoiser-system-model}
+    \end{figure}
+
+    \noindent Na wejście do kodera BCH(15,7) podany jest 7-elementowy binarny wektor reprezentujący oryginalną wiadomość. Wynikiem jest 15-elementowy wektor binarny reprezentujący wiadomość zakodowaną. Wektor ten, jest następnie poddany modulacji BPSK. Następnie, do zamodulowanego wektora wprowadzany jest addytywny biały szum gaussowski AWGN. Tym sposobem, 15-elementowy wektor zaszumionego sygnału przekazany zostaje do odszumiacza na bazie sieci neuronowej. Następuje próba odtworzenia pierwotnego sygnału podanego na wejście sieci. Za pomocą demodulatora możliwe jest zmiana tego wyniku z powrotem na reprezentację binarną. Takim sposobem, odtworzony 15-elementowy binarny wektor jest podawany na wejście dekodera BCH(15,7). Rezultatem jest 7-elementowy wektor stanowiący predykcję oryginalnie podanej do systemu wiadomości.
+
+    Odnośnie zaprojektowania algorytmów odszumiających opierających się o głębokie sieci neuronowe twórcy zaproponowali architektury przedstawione w tabeli \ref{denoiser-architektury-sieci}.
+
+    \begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabular}{|l|c|c|}
+    \hline
+    \textbf{Typ} & \textbf{MLP} & \textbf{CNN} \\ \hline
+    \textbf{Warstwa wejściowa} & N          & N*1                            \\ \hline
+    \textbf{Warstwa ukryta 1}  & Dense 256  & Conv1d 1*120*3 \& MaxPooling   \\ \hline
+    \textbf{Warstwa ukryta 2}  & Dense 128  & Conv1d 120*84*3 \& MaxPooling  \\ \hline
+    \textbf{Warstwa ukryta 3}  & Dense 64   & Conv1d 84*60*3 \& MaxPooling   \\ \hline
+    \textbf{Warstwa wyjściowa} & Dense N    & Dense N                        \\ \hline
+    \textbf{Łączna liczba parametrów} & 46223   & 46899                      \\ \hline
+    \end{tabular}
+    \caption{ Koncepcja dwóch architektur sieci będących odszumiaczami \cite{zhu2020novel} }
+    \label{denoiser-architektury-sieci}
+    \end{table}
+
+    \noindent Z tabeli wyczytać można, że sieć MLP jak i sieć CNN posiadają warstwy wejściowe zawierające $ N $ neuronów. Reprezentują one elementy wektora na wyjściu kanału wprowadzającego szum. Dla kodu BCH(15,7) N wynosi $ 15 $. Dalej są 3 warstwy ukryte. Dla MLP są to warstwy w pełni połączonych neuronów z funkcją aktywacji ReLU, o liczbie kolejno: 256, 128 oraz 64 węzłów. Dla CNN natomiast, są to jednowymiarowe warstwy konwolucyjne. Liczby map cech wynoszą odpowiednio 120, 84, 60. Rozmiar filtru (ang. \textit{kernel size}) wynosi 3.  Po każdej z warstw konwolucyjnych dane przechodzą przez operację maxpoolingu o rozmiarze 2. Na wyjściu sieci jest $ N $ neuronów, identycznie jak na wejściu. Dla obu algorytmów, założono podobną liczbę wszystkich parametrów, aby uniknąć różnic w ich wydajności.
+
+    W tym artykule, podczas badań posłużono się kodem BCH(15,7) o zdolności korekcji dwóch bitów. Jako dekoder BCH, użyto algorytmu Petersona z artykułu \cite{PetersonAlgorithm}. W zbiorze danych treningowych, którego wymiaru autorzy nie podali stosunek energii na bit do gęstości mocy szumu w sygnale $ E_b/N_0 $. Podczas wprowadzania szumu AWGN stosunek ten wynosił 0 dB. Dla zaszumionych danych testowych $ E_b/N_0 $ sięgało od 0 dB do 7 dB z krokiem co 1 dB — łącznie 8 poziomów zaszumienia. Rozmiar zbioru danych testowych wyniósł łącznie $ 10^6 $ próbek. Hiperparametry zastosowane do treningu sieci, które zostały wymienione w artykule, przedstawiono w tabeli \ref{parametry-sieci-denoiser}.
+
+    \begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabular}{|l|c|}
+    \hline
+    \textbf{Batch size} & 8          \\ \hline
+    \textbf{Learning rate}  & 0.0005  \\ \hline
+    \textbf{Epochs}  & $2^{14}$   \\ \hline
+    \textbf{Optimizer}  & Adam  \\ \hline
+    \end{tabular}
+    \caption{ Hiperparametry sieci neuronowej \cite{zhu2020novel} }
+    \label{parametry-sieci-denoiser}
+    \end{table}
+
+    Autorzy przeprowadzili badania za pomocą otwartoźródłowej platformy (ang. \textit{framework}) PyTorch stosowanej w dziedzinie uczenia głębokiego. Na wykresie \ref{denoiser-ber-performance} zaprezentowali swoje wyniki dla dekodera bez inteligentnego odszumiacza oraz dla trzech dekoderów z opracowanymi w artykule odszumiaczami. Rezultaty przedstawiono w funkcji bitowej stopy błędu (ang. \textit{bit error rate} — BER) od $ E_b/N_0 $. BER określa miarę jakości transmisji sygnału. Przedstawia proporcję błędnie przesłanych bitów w stosunku do całkowitej liczby przesłanych bitów.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.70\linewidth]{denoiser_ber_performance.png}
+        \caption{ Wydajność bitowej stopy błędów dla różnych poziomów zaszumienia \cite{zhu2020novel} }
+        \label{denoiser-ber-performance}
+    \end{figure}
+
+    Z omawianych w tej sekcji rozwiązań, najlepiej poradził sobie algorytm dekodowania z odszumianiem za pomocą MLP. W tym przypadku SNR wzrosło aż o 5.5 dB porównując z tradycyjnym dekoderem. Niewiele mniej korzystne okazało się użycie konwolucyjnej sieci neuronowej. W tym rozwiązaniu, twórcom udało się zwiększyć SNR o 4.3 dB. Te jak i więcej rezultatów liczbowych przedstawia wykres SNR do $ E_b/N_0 $ \ref{denoiser-snr-performance}.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.70\linewidth]{denoiser_snr_performance.png}
+        \caption{ Wydajność stosunku sygnału do szumu dla różnych poziomów zaszumienia \cite{zhu2020novel} }
+        \label{denoiser-snr-performance}
+    \end{figure}
+    
+    Podsumowując, zastosowanie innowacyjnych odszumiaczy bazujących na głębokich sieciach neuronowych jest bezapelacyjnie korzystne. Gwarantują poprawę predykcji oryginalnych wiadomości binarnych przesyłanych za pomocą systemu telekomunikacyjnego, co udowodnili autorzy omawianego artykułu naukowego.
+
+
+\section{Implementacja wybranego algorytmu}
+Zdecydowano się na stworzeniu sieci MLP i CNN na podstawie artykułu \cite{zhu2020novel}, które zostały odpowiednio zmodyfikowana na rzecz projektu. Nie tylko stworzono narzędzia do odszumiania błędnych zakodowanych wiadomości, ale również do ich dekodowania.
+
+
+
 
 % \section{Implementacja wybranego algorytmu uczenia głębokiego do poprawy jakości dekodowania wybranego korekcyjnego kodu blokowego 
 % }
+
+
     \subsection{Cel badania}
     Cel
     
@@ -474,12 +745,137 @@ Zdecydowałem się na artykuł z odszumianiem
     
     \subsection{Zbiór danych}
     Sam wygenerowałem
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.3\linewidth]{bin_to_sign.png}
+        \caption{ [...] }
+        \label{bin-to-sign}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\linewidth]{add_awgn.png}
+        \caption{ [...] }
+        \label{add-awgn}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\linewidth]{train_dataset_created.png}
+        \caption{ [...] }
+        \label{train-dataset-created}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\linewidth]{test_dataset_created.png}
+        \caption{ [...] }
+        \label{test-dataset-created}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\linewidth]{train_dataset_bledy.png}
+        \caption{ [...] }
+        \label{train-dataset-bledy}
+    \end{figure}
+    
     
     \subsection{Przebieg badania}
     Dużo plików
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\linewidth]{mlp_class.png}
+        \caption{ [...] }
+        \label{mlp-class}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\linewidth]{mlp_denoiser_learning_chart.png}
+        \caption{ [...] }
+        \label{mlp-denoiser-learning-chart}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\linewidth]{mlp_decoder_learning_chart.png}
+        \caption{ [...] }
+        \label{mlp-decoder-learning-chart}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\linewidth]{mlp_denoiser_test_results.png}
+        \caption{ [...] }
+        \label{mlp-denoiser-test-results}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\linewidth]{mlp_decoder_test_results.png}
+        \caption{ [...] }
+        \label{mlp-decoder-test-results}
+    \end{figure}
+    
+
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\linewidth]{cnn_class.png}
+        \caption{ [...] }
+        \label{cnn-class}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\linewidth]{cnn_denoiser_learning_chart.png}
+        \caption{ [...] }
+        \label{cnn-denoiser-learning-chart}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\linewidth]{cnn_decoder_learning_chart.png}
+        \caption{ [...] }
+        \label{cnn-decoder-learning-chart}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\linewidth]{cnn_denoiser_test_results.png}
+        \caption{ [...] }
+        \label{cnn-denoiser-test-results}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\linewidth]{cnn_decoder_test_results.png}
+        \caption{ [...] }
+        \label{cnn-decoder-test-results}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\linewidth]{output_updated.png}
+        \caption{ [...] }
+        \label{output-updated}
+    \end{figure}
+
+
     
     \subsection{Analiza wyników}
     Zaskakująco dobrze
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\linewidth]{my_ber_results.png}
+        \caption{ [...] }
+        \label{my-ber-results}
+    \end{figure}
+    
     
     \subsection{Wnioski}
     Wnioski
