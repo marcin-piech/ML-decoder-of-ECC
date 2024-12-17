@@ -26,7 +26,7 @@ for elem in Eb_N0_test:
 
     # Definicja nazw kolumn
     codeword_column = f"awgn_sign_codeword_binary_{elem}"
-    mlp_column = f"mlp_denoised_{elem}"
+    mlp_column = f"mlp_denoised"
     cnn_column = f"cnn_denoised"
 
     # Pobieranie danych z kolumn jako listy
